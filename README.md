@@ -1,0 +1,32 @@
+# light-public
+
+The public product showcase website for **L.I.G.H.T**: a sensing and guidance add-on for the white cane that can also be used on its own.
+
+> **Status:** Pre-design. There is no site code yet. The visual style, UX and page structure are agreed first, then the build starts.
+> L.I.G.H.T is a concept-stage product. Nothing on the site may claim a manufactured, tested or certified device.
+
+## What's here
+
+| Path | What it is |
+|---|---|
+| [docs/01_prd.md](docs/01_prd.md) | Product Requirements, v0.6: cane add-on pivot, reliability layer, Guide Notes, Route Memory |
+| [docs/02_trd.md](docs/02_trd.md) | Technical Requirements, v0.5: two-half architecture with an independent safety core, Guide Notes and Route Memory design |
+
+## Plan
+
+1. **Design direction** — visual style, tone, page structure and key interactions (next).
+2. **Content** — copy and assets adapted from the existing deck, docs and renders in the sibling folders `../docs`, `../poc` and `../light-guidance-experience/public`.
+3. **Build** — a fast static site. WCAG 2.2 AA minimum, fully usable with a screen reader and keyboard.
+
+## Rules for public content
+
+- Concept stage is stated plainly, and renders are labelled as concept visuals.
+- Market figures carry their sources; product numbers are labelled as targets.
+- No partner names or logos without written permission.
+- No personal contact details without the founders' sign-off.
+
+## Related folders (not in this repo)
+
+- `../light-guidance-experience` — the interactive proof-of-concept app (live detection, map walk, device views).
+- `../docs` — original Concept Brief, PRD v0.5, TRD v0.4, research plan, pitch brief.
+- `../poc` — pitch deck, product brief, earlier HTML demos.
