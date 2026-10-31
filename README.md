@@ -9,6 +9,7 @@ The public product showcase website for **L.I.G.H.T**: a sensing and guidance ad
 
 | Path | What it is |
 |---|---|
+| [AGENTS.md](AGENTS.md) | Handoff for agents: purpose, decisions, public-content rules, approved facts, source material. `CLAUDE.md` imports it |
 | [docs/01_prd.md](docs/01_prd.md) | Product Requirements, v0.6: cane add-on pivot, reliability layer, Guide Notes, Route Memory |
 | [docs/02_trd.md](docs/02_trd.md) | Technical Requirements, v0.5: two-half architecture with an independent safety core, Guide Notes and Route Memory design |
 
@@ -17,12 +18,14 @@ The public product showcase website for **L.I.G.H.T**: a sensing and guidance ad
 1. **Design direction** — visual style, tone, page structure and key interactions (next).
 2. **Content** — copy and assets adapted from the existing deck, docs and renders in the sibling folders `../docs`, `../poc` and `../light-guidance-experience/public`.
 3. **Build** — a fast static site. WCAG 2.2 AA minimum, fully usable with a screen reader and keyboard.
+4. **Deploy** — Vercel, project `beyourlight`.
 
 ## Rules for public content
 
 - Concept stage is stated plainly, and renders are labelled as concept visuals.
 - Market figures carry their sources; product numbers are labelled as targets.
-- No partner names or logos without written permission.
+- No partner or research-organisation names or logos.
+- The site does not say the product replaces the cane.
 - No personal contact details without the founders' sign-off.
 
 ## Related folders (not in this repo)

@@ -1,6 +1,6 @@
 # L.I.G.H.T — Product Requirements Document (PRD)
 
-> **Status:** DRAFT v0.6 (cane add-on pivot, reliability layer, Guide Notes, Route Memory) · **Last updated:** 2026-10-31
+> **Status:** DRAFT v0.6 rev. 2 (cane add-on pivot, reliability layer, Guide Notes, Route Memory; founder answers of 10-31 applied) · **Last updated:** 2026-10-31
 > Supersedes: PRD v0.5 (2026-09-01) in [`../docs/02_prd.md`](../../docs/02_prd.md) (outside this repo)
 > Companion document: [TRD](02_trd.md)
 > Tags: **[OPEN]** = undecided · **[ASSUMPTION]** = inferred, confirm · **[REC]** = recommendation, pending decision · **[DECIDED 10-31]** = confirmed by founder this pass
@@ -17,7 +17,7 @@
 | **New: Guide Notes** | — | An accompanying assistor records spoken instructions that the user can replay later, on demand or at the place they were recorded **[DECIDED 10-31]** |
 | **New: Route Memory** | — | The device learns usual paths and remembers obstacles along them, so feedback and replay work fully offline **[DECIDED 10-31]** |
 
-"Guide Notes" and "Route Memory" are working names. **[OPEN]**
+"Guide Notes" and "Route Memory" are the feature names. **[DECIDED 10-31]**
 
 ## 1. Overview & goals
 
@@ -30,7 +30,7 @@ The same unit detaches and works as a short handheld device on its own.
 - **It answers the hardest safety question.** v0.5 had to match the cane's ground-hazard detection before it could ship. Clipped to a cane, the cane tip still finds curbs, drop-offs and stairs while L.I.G.H.T covers everything above and beyond the tip.
 - **It gives the system a fallback that always works.** If every electronic part fails, the user is still holding a working cane.
 
-**Long-term vision:** a fully trusted standalone device remains the long-term goal. Standalone use earns trust step by step through the reliability layer and Route Memory, rather than being required on day one. **[OPEN — confirm this is still the long-term vision]**
+**Long-term vision (internal only):** a fully trusted standalone device remains the founder's long-term goal. Standalone use earns trust step by step through the reliability layer and Route Memory, rather than being required on day one. **[DECIDED 10-31]** This goal is **not stated on the public site** (§8).
 
 **Success priorities (unchanged):** (1) Safety, (2) User confidence, (3) Adoption.
 
@@ -72,7 +72,7 @@ The same unit detaches and works as a short handheld device on its own.
 
 | ID | Requirement | Priority / status |
 |---|---|---|
-| **PRD-F-001** | **Directional haptic feedback** (changed v0.6). Haptic actuators where the hand rests: **location = obstacle direction**, **intensity rises as distance falls**, continuous and real-time. In cane mode the direction is **stabilised to the user's walking heading**, not to the sweeping cane. | **[v1]** · [OPEN: haptic placement on a cane, see §10] |
+| **PRD-F-001** | **360° directional haptic feedback** (changed v0.6). A **haptic grip sleeve** that wraps the whole cane grip carries a full ring of actuators around the hand, so all-around feedback works as designed: **position on the ring = obstacle direction**, **intensity rises as distance falls**, continuous and real-time. The direction is **stabilised to the user's walking heading**, not to the sweeping or rotating cane. | **[v1]** · **[DECIDED 10-31: full grip sleeve]** |
 | **PRD-F-002** | **Multi-obstacle prioritization.** Convey the **top 3** obstacles at once. Live ranking: threats first (left to right), then nearest first (carried from the POC, TRD-CV-005). | **[v1]** |
 | **PRD-F-003** | **Obstacle detection & ranging** (changed v0.6). **Cane mode:** forward and overhead coverage is the priority. Ground level is handled by the cane tip, with sensor coverage as a backup. **Standalone mode:** coverage must include ground level. Full 360° remains a goal. | **[v1]** · [OPEN: 360° in cane mode] |
 | **PRD-F-004** | **Object identification (point-to-identify).** The user points the unit at an obstacle and the earbud says what it is. On demand. | **[v1]** · [OPEN: non-visual aiming] |
@@ -88,9 +88,9 @@ The same unit detaches and works as a short handheld device on its own.
 
 | ID | Requirement | Priority / status |
 |---|---|---|
-| **PRD-F-016** | **Cane-mount mode.** Clips onto a standard white cane shaft below the grip **without tools**, in under 10 seconds, without changing the user's grip or sweep technique. | **[v1]** · [OPEN: supported cane types, see §10] |
+| **PRD-F-016** | **Cane-mount mode.** Two parts fit a standard white cane **without tools**: the **haptic grip sleeve** slides over the cane's grip, and the **sensor unit** clamps to the shaft just below it. Fitting takes under a minute the first time and under 10 seconds after that, without changing the user's grip or sweep technique. **[REC]** | **[v1]** · [OPEN: supported cane types, see §10] |
 | **PRD-F-017** | **Fits common canes.** Works with common rigid and folding long canes, and does not stop a folding cane from folding (or detaches quickly before folding). | **[v1]** · [ASSUMPTION: shaft size range to be measured] |
-| **PRD-F-018** | **Standalone mode.** Detached, the unit works as a handheld device with the same feedback, alerts, Guide Notes and Route Memory. The unit **knows which mode it is in** and adjusts its sensing (ground-level coverage is required in standalone). | **[v1]** hardware · [OPEN: what standalone is recommended for, see §10] |
+| **PRD-F-018** | **Standalone mode.** Detached, the unit works as a handheld device with the same feedback, alerts, Guide Notes and Route Memory; the grip sleeve becomes its handle **[REC]**. The unit **knows which mode it is in** and adjusts its sensing (ground-level coverage is required in standalone). **In v1, standalone is recommended for familiar routes and indoor settings only**, until ground-hazard detection is validated. | **[v1]** hardware · **[DECIDED 10-31]** · not featured on the public site (§8) |
 | **PRD-F-019** | **Mode announcement.** Attaching, detaching, and the current mode are confirmed by a short sound and haptic pattern. | **[v1]** |
 
 ### 4.3 Reliability and fallback (new)
@@ -121,7 +121,7 @@ The same unit detaches and works as a short handheld device on its own.
 | ID | Requirement | Priority / status |
 |---|---|---|
 | **PRD-F-033** | **Teach a route.** The user (often with an assistor) starts a teach session, walks the route, and saves it with a name. Guide Notes recorded during the session attach to that route. | **[v1]** |
-| **PRD-F-034** | **Learn usual routes automatically.** The device notices journeys repeated often and offers to save them. It never saves a route without the user's confirmation. | **[Secondary]** · [OPEN: auto vs. teach-only for v1] |
+| **PRD-F-034** | **Learn usual routes automatically.** The device notices journeys repeated often and offers to save them. It never saves a route without the user's confirmation. | **[v1]** · **[DECIDED 10-31]** |
 | **PRD-F-035** | **Remembered obstacles.** Along saved routes, the device stores **fixed obstacles** it detected (poles, bollards, steps, low branches, kerbs, benches) and gives **early feedback** as the user approaches them. | **[v1]** |
 | **PRD-F-036** | **Memory adds caution, never removes it.** A remembered obstacle can trigger a warning; the absence of a memory **never suppresses** a live sensor warning. Live sensing always wins. | **[v1]** · Safety-critical |
 | **PRD-F-037** | **Memory keeps itself current.** Obstacles not seen again over several trips fade out; new fixed obstacles are added; temporary ones (people, parked cars, bins) are not remembered as fixed. | **[v1]** |
@@ -136,8 +136,8 @@ The same unit detaches and works as a short handheld device on its own.
 - **PRD-NF-001 Threat-alert latency** — detection → alert **< 50 ms** on the main path. **Safety core** proximity warning **< 100 ms** **[REC]**.
 - **PRD-NF-002 Offline core** (changed v0.6) — sensing, threat alerts, haptics, **Guide Notes and Route Memory** all work with no network.
 - **PRD-NF-003 Privacy by design** — EU/GDPR; on-device processing; raw camera and audio never leave the device. **Recorded voice (Guide Notes) and location history (Route Memory) are personal data** and stay on-device by default.
-- **PRD-NF-004 Form factor & ergonomics** (changed v0.6) — the cane add-on must be **light enough not to change cane balance or cause fatigue**. **[ASSUMPTION]** target **≤ 150 g** for the clip-on unit (v0.5 baton target was 350–450 g). Standalone size: about 20 cm, one-handed. **[OPEN]**
-- **PRD-NF-005 Battery & charging** (changed v0.6) — **[ASSUMPTION]** full features for **at least one full day**, with the safety core lasting much longer from its reserve. v0.5's 3–5 days is unlikely at ≤ 150 g. Wireless charging dock retained. **[OPEN]**
+- **PRD-NF-004 Form factor & ergonomics** (changed v0.6) — weight budget **up to 750–800 g** for the complete add-on (grip sleeve + sensor unit) **[DECIDED 10-31]**. Lighter is better: mass sits close to the grip to keep cane balance and limit wrist fatigue, to be validated with users. Standalone size: about 20 cm plus the sleeve as handle, one-handed. **[OPEN]**
+- **PRD-NF-005 Battery & charging** (changed v0.6) — **[ASSUMPTION]** full features for **at least one full day**, with the safety core lasting much longer from its reserve. The 750–800 g budget leaves room for a larger battery, so **[REC]** aim for 2–3 days and confirm with the power budget. Wireless charging dock retained. **[OPEN]**
 - **PRD-NF-006 All-environment operation** — rain, cold, day and night. NIR + IR cameras at night; LIDAR/ToF for geometry. The safety core must work in **darkness and bright sun**.
 - **PRD-NF-007 Reliability / graceful failure** (defined v0.6) — no single failure removes basic obstacle warning; no silent failure; defined fallback ladder (§6.2). Targets in TRD §9.
 - **PRD-NF-008 Low training burden** — a user already trained on a cane should be using v1 cane mode within **one session** **[ASSUMPTION]**. An assistor should record a first Guide Note **without instructions**.
@@ -170,22 +170,26 @@ A threat overrides everything: spoken "STOP" plus a heavy whole-unit vibration. 
 
 ## 7. Scope — v1 vs. later
 
-- **v1 (first product):** cane-mount mode with standalone use; forward and overhead sensing; threat alerts; object ID on demand; the reliability layer (fallback ladder, safety core, no silent failure, battery reserve); **Guide Notes** (record, tag, replay on demand and at a place, manage); **Route Memory** (teach a route, remembered obstacles, replay and rehearsal, fully offline); braille buttons; companion app for managing notes and routes.
-- **Secondary:** automatic route learning; on-route guidance; turn-by-turn navigation; voice assistant; fuller 360° coverage in cane mode.
+- **v1 (first product):** cane-mount mode with the 360° haptic grip sleeve, plus standalone use for familiar and indoor settings; forward and overhead sensing; threat alerts; object ID on demand; the reliability layer (fallback ladder, safety core, no silent failure, battery reserve); **Guide Notes** (record, tag, replay on demand and at a place, manage); **Route Memory** (teach a route, automatic learning of repeated trips with confirmation, remembered obstacles, replay and rehearsal, fully offline); braille buttons; companion app for managing notes and routes.
+- **Secondary:** on-route guidance; turn-by-turn navigation; voice assistant; fuller 360° coverage in cane mode.
 - **Later:** remote Guide Notes; note transcription and search; progressive-loss analytics; indoor navigation; standalone mode validated for unfamiliar outdoor travel.
 
 ## 8. Showcase scope (`light-public`)
 
-This repository holds the public product showcase website. The site presents the product as described in this PRD, following these rules:
+This repository holds the public product showcase website. **[DECIDED 10-31]** unless marked otherwise.
 
+- **Audience:** investors, and anyone who wants to understand what L.I.G.H.T is.
+- **Hosting:** Vercel, project name **beyourlight**. No custom domain yet.
+- **Visual style:** a fresh design, not the pitch deck's or the POC app's styling. The founder will brief it separately in this repository.
 - **Concept stage, said plainly.** No claim of a manufactured, tested or certified device. Renders are labelled as concept visuals.
-- **Lead with the pivot.** "Works with the cane you already trust", then reliability, then Guide Notes and Route Memory, then the advanced sensing.
+- **Lead with the cane add-on.** "Works with the cane you already trust", then reliability, then Guide Notes and Route Memory, then the advanced sensing.
 - **Reliability is a headline feature**, not small print. The fallback ladder (§6.2) should be easy to understand visually.
-- **Only cite what is cited.** Market figures carry sources; product numbers are labelled as targets.
-- **No partner names or logos** without written permission.
+- **Founders are shown** by name and role.
+- **Market figures may be shown**, each with its source. Product numbers (price, weight, battery) are labelled as targets.
+- **Do not mention any partner or research organisation**, by name or logo.
+- **Do not present standalone use as the end goal**, and do not say the product replaces the cane. Whether to mention standalone use at all is **[OPEN]**: ask the founder before including it.
+- **New renders are needed** for the cane-mounted form with the grip sleeve; existing renders show the old standalone baton. The founder will brief the renders separately.
 - **Accessibility is the proof.** The site itself meets WCAG 2.2 AA at minimum and works fully with a screen reader and keyboard.
-
-Visual style, UX and page structure are defined in a separate design brief (next step).
 
 ## 9. Success metrics
 
@@ -197,10 +201,11 @@ Priority order: **Safety > User confidence > Adoption.**
 ## 10. Risks, assumptions & open questions
 
 **New in v0.6**
-- **Haptic placement on a cane.** The hand holds the cane grip; options are a haptic grip sleeve, a unit where the index finger rests, or a band on the wrist. Each changes the design. **[OPEN]**
-- **Weight and balance.** Anything heavy near the grip tires the wrist and changes the sweep. ≤ 150 g target conflicts with sensors, compute and battery. **[OPEN]**
+- **Grip sleeve on different canes.** Cane grips vary in shape, length and material (rubber, golf-style, cork, crook). The sleeve has to fit them snugly enough that vibration reaches the hand clearly. **[OPEN: sizes or adapters]**
+- **Rotating grip.** Users roll the cane in the hand while sweeping, so the actuator under a given finger keeps changing. The sleeve must track its own rotation (IMU) to keep "left" on the left.
+- **Weight and balance.** A 750–800 g add-on is heavy relative to a long cane **[ASSUMPTION: typical canes weigh a few hundred grams]**. Mass near the grip limits the effect on sweep, but wrist fatigue over a long walk must be tested with users early.
 - **Sensors on a sweeping cane.** The unit moves with every sweep; the IMU must stabilise everything to walking direction. Rear coverage is blocked by the user's body in cane mode.
-- **Standalone mode safety.** Without the cane tip, ground hazards depend on sensors only. **[REC]** Present standalone v1 as suited to familiar and indoor settings until ground-hazard detection is validated. **[OPEN]**
+- **Standalone mode safety.** Without the cane tip, ground hazards depend on sensors only. v1 recommends standalone for familiar and indoor settings only (PRD-F-018).
 - **Cane compatibility.** Shaft diameters and shapes vary (rigid, folding, telescopic, graphite, aluminium). **[ASSUMPTION: measure common models]**
 - **Remembered obstacles going stale.** A remembered obstacle that has moved creates false alarms; one that has appeared is caught by live sensing only. PRD-F-036 keeps this safe; tuning PRD-F-037 is the open work.
 - **Recording other people.** Guide Notes record the assistor's voice and may capture bystanders. Explicit start, clear recording sound, on-device storage. **[OPEN: legal review]**
@@ -215,3 +220,6 @@ Priority order: **Safety > User confidence > Adoption.**
 **Resolved in v0.6**
 - ~~Mid-journey failure fallback (PRD-NF-007)~~ → the cane plus the fallback ladder.
 - ~~Full-replacement ground-hazard safety bar gates v1~~ → the cane covers ground level in v1; the bar now applies to standalone validation (Later).
+- ~~Haptic placement on a cane~~ → a full 360° grip sleeve (PRD-F-001).
+- ~~Standalone recommendation~~ → familiar and indoor settings only in v1 (PRD-F-018).
+- ~~Automatic route learning in v1~~ → yes, with confirmation before saving (PRD-F-034).
