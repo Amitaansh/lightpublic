@@ -14,8 +14,8 @@ This file exists so that any agent picking up the work starts from the same deci
 
 - **No site code exists yet. Do not write any until the founder approves a design direction.**
 - The repo contains only this file, a README, and the product docs:
-  - [docs/01_prd.md](docs/01_prd.md): Product Requirements v0.6 rev. 2. **Source of truth for what the product is.**
-  - [docs/02_trd.md](docs/02_trd.md): Technical Requirements v0.5 rev. 2. Source of truth for how it works.
+  - [docs/01_prd.md](docs/01_prd.md): Product Requirements v0.7. **Source of truth for what the product is.**
+  - [docs/02_trd.md](docs/02_trd.md): Technical Requirements v0.6. Source of truth for how it works.
 - **Next step:** the founder will open a session in this directory and give more context about the website (visual style, references, structure) and about the new renders needed. Your first deliverable is a **design brief** at `docs/03_design_brief.md` with 2–3 distinct visual directions for the founder to choose from. Ask questions before writing it if the founder's brief leaves gaps.
 - Order of work: **design direction → content and renders → build → deploy.**
 
@@ -23,7 +23,7 @@ This file exists so that any agent picking up the work starts from the same deci
 
 L.I.G.H.T (*LIDAR Integrated Guidance & Handheld Tracker*) is a sensing and guidance **add-on for the white cane**, for blind and visually-impaired people.
 
-- **Form:** a **haptic grip sleeve** that wraps the cane's grip, plus a **sensor unit** clamped just below it. Total weight budget up to 750–800 g (target).
+- **Form:** **one baton** (about 20 cm × 38 mm, the original L.I.G.H.T form) with an ergonomic grip and a **clip on its body** that attaches it to a white cane. It sits on top of the cane, sensor head toward the tip, and the hand holds the baton grip with the cane's grip nested beneath. Weight target **[OPEN]** (the old 750–800 g budget doesn't fit this size).
 - **What it adds to the cane:** warning of obstacles at a distance and **overhead** (which a cane cannot reach), alerts for **fast-approaching threats** ("STOP" plus a strong whole-grip vibration), and **object identification** on request through a single earbud.
 - **360° haptic feedback:** a ring of vibration motors around the grip. Where it vibrates = where the obstacle is; how strongly = how close.
 - **Reliability first:** an **independent safety core** (its own chip, sensors and battery reserve) keeps basic obstacle warnings working even if the main AI system fails. The system steps down in clear levels and **never fails silently**. If all electronics fail, the user still holds a working cane.
@@ -43,7 +43,8 @@ Stage: **concept.** A software prototype exists; no hardware has been built.
 | Founders | **May be shown** by name and role (see §6) |
 | Partners / research organisations | **Do not mention any**, by name or logo, anywhere on the site |
 | Market numbers | **May be shown**, each with its source (see §6) |
-| Renders | **New renders are needed** for the cane-mounted form with the grip sleeve. The founder will brief them |
+| Renders | **New renders are needed** of the cane-mounted form. Prompts: [docs/image-prompts.md](docs/image-prompts.md); animation briefs: [docs/animations.md](docs/animations.md) |
+| Device form for renders (11-01) | The **original L.I.G.H.T baton**, form kept mostly the same, with a more ergonomic grip and a **clip on the baton body** that attaches it to a white cane. The hand holds the baton grip. **Neutral colourway**: graphite grey, soft-white light ring; no cyan or amber. Applied to PRD v0.7 and TRD v0.6 |
 | Feature names | "Guide Notes" and "Route Memory" are final |
 
 ## 5. Rules for anything public
@@ -95,7 +96,7 @@ The pitch brief also gives "~€250M/yr" next to the 615,000 users. That number 
 | `../docs/01_concept_brief.md` | Problem statement (what the cane cannot do), personas, principles | **Out of date:** still says "fully replace the cane" and "no prototype". The PRD here wins |
 | `../docs/07_vip_pitch_design_prompt.md` | Market sizing, team, milestones narrative | Mentions partner organisations: do not reuse those parts |
 | `../poc/` | Pitch deck (.pptx), product brief PDF, earlier HTML pages | Old standalone-baton positioning |
-| `../light-guidance-experience/public/assets/device/` | Device renders (`light-v2-*` are the newest) | Show the **old standalone baton**. Not the current product |
+| `../light-guidance-experience/public/assets/device/` | Device renders (`light-v2-*` are the newest) | Show the baton's **form**, which is kept (11-01), but in the old colours and without the cane clip. Use as **reference images** for new renders, not on the site as-is |
 | `../light-guidance-experience/public/media/` | Five "day in the life" frames | Show the old baton; check with the founder before use |
 | `../light-guidance-experience/src/content/product.ts` | Device and story copy | Written for the old baton; adapt, don't copy |
 | `../light-guidance-experience` (running app) | Live detection, haptic ring, STOP alert | Good source for screen recordings of the working software |

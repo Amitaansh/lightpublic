@@ -1,9 +1,9 @@
 # L.I.G.H.T — Product Requirements Document (PRD)
 
-> **Status:** DRAFT v0.6 rev. 2 (cane add-on pivot, reliability layer, Guide Notes, Route Memory; founder answers of 10-31 applied) · **Last updated:** 2026-10-31
+> **Status:** DRAFT v0.7 (form factor: the original baton with a cane clip; founder decisions of 11-01 applied) · **Last updated:** 2026-11-01
 > Supersedes: PRD v0.5 (2026-09-01) in [`../docs/02_prd.md`](../../docs/02_prd.md) (outside this repo)
 > Companion document: [TRD](02_trd.md)
-> Tags: **[OPEN]** = undecided · **[ASSUMPTION]** = inferred, confirm · **[REC]** = recommendation, pending decision · **[DECIDED 10-31]** = confirmed by founder this pass
+> Tags: **[OPEN]** = undecided · **[ASSUMPTION]** = inferred, confirm · **[REC]** = recommendation, pending decision · **[DECIDED 10-31]** / **[DECIDED 11-01]** = confirmed by founder on that date
 > Priority tags: **[v1]** = first product · **[Secondary]** = next · **[Later]**
 > Requirement IDs from v0.5 are kept stable. Changed requirements say **(changed v0.6)**; new ones start at PRD-F-016.
 
@@ -18,6 +18,17 @@
 | **New: Route Memory** | — | The device learns usual paths and remembers obstacles along them, so feedback and replay work fully offline **[DECIDED 10-31]** |
 
 "Guide Notes" and "Route Memory" are the feature names. **[DECIDED 10-31]**
+
+### 0.1 What changed in v0.7
+
+| Area | v0.6 | v0.7 |
+|---|---|---|
+| **Form factor** | Two parts: a haptic grip sleeve over the cane's grip, and a sensor unit clamped below it, joined by a cable | **One part: the original L.I.G.H.T baton**, form kept mostly the same (about 20 cm × 38 mm; sensor head, light ring, buttons, grip, end cap). It gets a **more ergonomic grip** and a **mechanical clip on the baton body** that attaches it to the cane **[DECIDED 11-01]** |
+| **How it's held** | Hand on the sleeve over the cane's grip | **Hand on the baton grip.** The baton sits on top of the cane, parallel to the shaft, sensor head toward the tip. The cane's own grip nests under the baton grip, so the hand holds both as one handle **[DECIDED 11-01: hand on baton grip; nesting layout is REC]** |
+| **Haptics** | Actuator ring in the sleeve | **Actuator ring inside the baton grip** (PRD-F-001). No cable between parts |
+| **Standalone** | Sleeve and sensor unit join into one handheld | **Unclip the baton.** It is already a complete handheld |
+| **Colourway (renders)** | — | Neutral: graphite grey, soft-white light ring. No cyan or amber **[DECIDED 11-01]** |
+| **Weight budget** | 750–800 g | **Needs reconciling with the baton's size** (PRD-NF-004) **[OPEN]** |
 
 ## 1. Overview & goals
 
@@ -51,7 +62,7 @@ The same unit detaches and works as a short handheld device on its own.
 - I want to **operate everything without sight**.
 
 **Cane add-on and reliability (new)**
-- I want to **attach L.I.G.H.T to the cane I already use**, without tools and without changing how I hold or sweep it.
+- I want to **attach L.I.G.H.T to the cane I already use**, without tools, without changing how I sweep it, and with as little change as possible to how I hold it.
 - I want to **know immediately if any part of the system stops working**, and what I can still rely on.
 - I want to **detach it and use it on its own** for short trips or indoors when I don't want to carry the cane.
 
@@ -72,7 +83,7 @@ The same unit detaches and works as a short handheld device on its own.
 
 | ID | Requirement | Priority / status |
 |---|---|---|
-| **PRD-F-001** | **360° directional haptic feedback** (changed v0.6). A **haptic grip sleeve** that wraps the whole cane grip carries a full ring of actuators around the hand, so all-around feedback works as designed: **position on the ring = obstacle direction**, **intensity rises as distance falls**, continuous and real-time. The direction is **stabilised to the user's walking heading**, not to the sweeping or rotating cane. | **[v1]** · **[DECIDED 10-31: full grip sleeve]** |
+| **PRD-F-001** | **360° directional haptic feedback** (changed v0.7). The **baton's ergonomic grip**, which the user's hand holds, carries a full ring of actuators around the hand, so all-around feedback works as designed: **position on the ring = obstacle direction**, **intensity rises as distance falls**, continuous and real-time. The direction is **stabilised to the user's walking heading**, not to the sweeping or rotating cane. | **[v1]** · **[DECIDED 11-01: ring in the baton grip; replaces the 10-31 grip sleeve]** |
 | **PRD-F-002** | **Multi-obstacle prioritization.** Convey the **top 3** obstacles at once. Live ranking: threats first (left to right), then nearest first (carried from the POC, TRD-CV-005). | **[v1]** |
 | **PRD-F-003** | **Obstacle detection & ranging** (changed v0.6). **Cane mode:** forward and overhead coverage is the priority. Ground level is handled by the cane tip, with sensor coverage as a backup. **Standalone mode:** coverage must include ground level. Full 360° remains a goal. | **[v1]** · [OPEN: 360° in cane mode] |
 | **PRD-F-004** | **Object identification (point-to-identify).** The user points the unit at an obstacle and the earbud says what it is. On demand. | **[v1]** · [OPEN: non-visual aiming] |
@@ -88,9 +99,9 @@ The same unit detaches and works as a short handheld device on its own.
 
 | ID | Requirement | Priority / status |
 |---|---|---|
-| **PRD-F-016** | **Cane-mount mode.** Two parts fit a standard white cane **without tools**: the **haptic grip sleeve** slides over the cane's grip, and the **sensor unit** clamps to the shaft just below it. Fitting takes under a minute the first time and under 10 seconds after that, without changing the user's grip or sweep technique. **[REC]** | **[v1]** · [OPEN: supported cane types, see §10] |
+| **PRD-F-016** | **Cane-mount mode** (changed v0.7). The baton **clips onto a standard white cane without tools**, using a mechanical clip on the baton body **[DECIDED 11-01]**. It sits on top of the cane, parallel to the shaft, sensor head toward the tip; the clip grips the shaft just ahead of the cane's own grip, which nests in a channel under the baton grip, so the hand holds both as one handle **[REC]**. Fitting takes under a minute the first time and under 10 seconds after that. Sweep technique is unchanged; the hand position changes as little as possible (to be tested, §10). **[REC]** | **[v1]** · [OPEN: supported cane types and grip shapes, see §10] |
 | **PRD-F-017** | **Fits common canes.** Works with common rigid and folding long canes, and does not stop a folding cane from folding (or detaches quickly before folding). | **[v1]** · [ASSUMPTION: shaft size range to be measured] |
-| **PRD-F-018** | **Standalone mode.** Detached, the unit works as a handheld device with the same feedback, alerts, Guide Notes and Route Memory; the grip sleeve becomes its handle **[REC]**. The unit **knows which mode it is in** and adjusts its sensing (ground-level coverage is required in standalone). **In v1, standalone is recommended for familiar routes and indoor settings only**, until ground-hazard detection is validated. | **[v1]** hardware · **[DECIDED 10-31]** · not featured on the public site (§8) |
+| **PRD-F-018** | **Standalone mode** (changed v0.7). Unclipped, the baton works as a handheld device with the same feedback, alerts, Guide Notes and Route Memory, held by its own grip. The unit **knows which mode it is in** and adjusts its sensing (ground-level coverage is required in standalone). **In v1, standalone is recommended for familiar routes and indoor settings only**, until ground-hazard detection is validated. | **[v1]** hardware · **[DECIDED 10-31]** · not featured on the public site (§8) |
 | **PRD-F-019** | **Mode announcement.** Attaching, detaching, and the current mode are confirmed by a short sound and haptic pattern. | **[v1]** |
 
 ### 4.3 Reliability and fallback (new)
@@ -136,8 +147,8 @@ The same unit detaches and works as a short handheld device on its own.
 - **PRD-NF-001 Threat-alert latency** — detection → alert **< 50 ms** on the main path. **Safety core** proximity warning **< 100 ms** **[REC]**.
 - **PRD-NF-002 Offline core** (changed v0.6) — sensing, threat alerts, haptics, **Guide Notes and Route Memory** all work with no network.
 - **PRD-NF-003 Privacy by design** — EU/GDPR; on-device processing; raw camera and audio never leave the device. **Recorded voice (Guide Notes) and location history (Route Memory) are personal data** and stay on-device by default.
-- **PRD-NF-004 Form factor & ergonomics** (changed v0.6) — weight budget **up to 750–800 g** for the complete add-on (grip sleeve + sensor unit) **[DECIDED 10-31]**. Lighter is better: mass sits close to the grip to keep cane balance and limit wrist fatigue, to be validated with users. Standalone size: about 20 cm plus the sleeve as handle, one-handed. **[OPEN]**
-- **PRD-NF-005 Battery & charging** (changed v0.6) — **[ASSUMPTION]** full features for **at least one full day**, with the safety core lasting much longer from its reserve. The 750–800 g budget leaves room for a larger battery, so **[REC]** aim for 2–3 days and confirm with the power budget. Wireless charging dock retained. **[OPEN]**
+- **PRD-NF-004 Form factor & ergonomics** (changed v0.7) — **one baton, about 20 cm long and 38 mm in diameter**, the original L.I.G.H.T form with a more ergonomic grip and a cane clip **[DECIDED 11-01]**. One-handed in both modes. Mass sits at the hand, which keeps cane balance; wrist fatigue to be validated with users. **Weight [OPEN]:** the 10-31 budget of up to 750–800 g does not fit this size. The baton's volume is about 230 cm³, and 750 g in that volume would be denser than solid aluminium. The earlier baton target was 350–450 g. Either the weight target comes down, or the baton grows. Decide with the power budget (TRD §9).
+- **PRD-NF-005 Battery & charging** (changed v0.6) — **[ASSUMPTION]** full features for **at least one full day**, with the safety core lasting much longer from its reserve. **[REC]** aim for 2–3 days if the baton's volume allows, and confirm with the power budget (the v0.6 reasoning relied on the 750–800 g budget, now [OPEN]). Wireless charging dock retained. **[OPEN]**
 - **PRD-NF-006 All-environment operation** — rain, cold, day and night. NIR + IR cameras at night; LIDAR/ToF for geometry. The safety core must work in **darkness and bright sun**.
 - **PRD-NF-007 Reliability / graceful failure** (defined v0.6) — no single failure removes basic obstacle warning; no silent failure; defined fallback ladder (§6.2). Targets in TRD §9.
 - **PRD-NF-008 Low training burden** — a user already trained on a cane should be using v1 cane mode within **one session** **[ASSUMPTION]**. An assistor should record a first Guide Note **without instructions**.
@@ -170,7 +181,7 @@ A threat overrides everything: spoken "STOP" plus a heavy whole-unit vibration. 
 
 ## 7. Scope — v1 vs. later
 
-- **v1 (first product):** cane-mount mode with the 360° haptic grip sleeve, plus standalone use for familiar and indoor settings; forward and overhead sensing; threat alerts; object ID on demand; the reliability layer (fallback ladder, safety core, no silent failure, battery reserve); **Guide Notes** (record, tag, replay on demand and at a place, manage); **Route Memory** (teach a route, automatic learning of repeated trips with confirmation, remembered obstacles, replay and rehearsal, fully offline); braille buttons; companion app for managing notes and routes.
+- **v1 (first product):** the baton clipped onto the cane, with the 360° haptic ring in its grip, plus standalone use for familiar and indoor settings; forward and overhead sensing; threat alerts; object ID on demand; the reliability layer (fallback ladder, safety core, no silent failure, battery reserve); **Guide Notes** (record, tag, replay on demand and at a place, manage); **Route Memory** (teach a route, automatic learning of repeated trips with confirmation, remembered obstacles, replay and rehearsal, fully offline); braille buttons; companion app for managing notes and routes.
 - **Secondary:** on-route guidance; turn-by-turn navigation; voice assistant; fuller 360° coverage in cane mode.
 - **Later:** remote Guide Notes; note transcription and search; progressive-loss analytics; indoor navigation; standalone mode validated for unfamiliar outdoor travel.
 
@@ -188,7 +199,7 @@ This repository holds the public product showcase website. **[DECIDED 10-31]** u
 - **Market figures may be shown**, each with its source. Product numbers (price, weight, battery) are labelled as targets.
 - **Do not mention any partner or research organisation**, by name or logo.
 - **Do not present standalone use as the end goal**, and do not say the product replaces the cane. Whether to mention standalone use at all is **[OPEN]**: ask the founder before including it.
-- **New renders are needed** for the cane-mounted form with the grip sleeve; existing renders show the old standalone baton. The founder will brief the renders separately.
+- **New renders are needed** of the baton clipped onto a cane, in the neutral colourway (changed v0.7). The existing `light-v2-*` renders show the right form but the old colours and no clip; use them as references only. Prompts: [image-prompts.md](image-prompts.md); animation briefs: [animations.md](animations.md).
 - **Accessibility is the proof.** The site itself meets WCAG 2.2 AA at minimum and works fully with a screen reader and keyboard.
 
 ## 9. Success metrics
@@ -200,10 +211,16 @@ Priority order: **Safety > User confidence > Adoption.**
 
 ## 10. Risks, assumptions & open questions
 
+**New in v0.7**
+- **One handle from two grips.** The hand holds the baton grip with the cane's grip nested beneath it. The combined handle must stay comfortable and not too thick, and vibration must reach the palm clearly. Test with a mock-up early. **[OPEN]**
+- **Cane grips that don't nest.** Straight rubber and golf-style grips can sit in a channel; crook handles and thick cork grips may not. **[OPEN: which grips are supported, or an adapter]**
+- **Weight vs. size.** See PRD-NF-004: the 750–800 g budget and the baton's size conflict. **[OPEN]**
+- **Sensor head angle.** On a cane, the baton lies along the shaft, so its sensor head points forward and down at the cane's angle (often 30–40° below horizontal). The sensor layout in the head must still cover forward and overhead in that position. **[OPEN]**
+
 **New in v0.6**
-- **Grip sleeve on different canes.** Cane grips vary in shape, length and material (rubber, golf-style, cork, crook). The sleeve has to fit them snugly enough that vibration reaches the hand clearly. **[OPEN: sizes or adapters]**
-- **Rotating grip.** Users roll the cane in the hand while sweeping, so the actuator under a given finger keeps changing. The sleeve must track its own rotation (IMU) to keep "left" on the left.
-- **Weight and balance.** A 750–800 g add-on is heavy relative to a long cane **[ASSUMPTION: typical canes weigh a few hundred grams]**. Mass near the grip limits the effect on sweep, but wrist fatigue over a long walk must be tested with users early.
+- ~~**Grip sleeve on different canes.**~~ → replaced in v0.7 by "Cane grips that don't nest" above.
+- **Rotating grip.** Users roll the cane in the hand while sweeping, so the actuator under a given finger keeps changing. The baton turns with the cane, so it must track its own roll (IMU) to keep "left" on the left.
+- **Weight and balance.** Any add-on is heavy relative to a long cane **[ASSUMPTION: typical canes weigh a few hundred grams]**. Mass at the grip limits the effect on sweep, but wrist fatigue over a long walk must be tested with users early.
 - **Sensors on a sweeping cane.** The unit moves with every sweep; the IMU must stabilise everything to walking direction. Rear coverage is blocked by the user's body in cane mode.
 - **Standalone mode safety.** Without the cane tip, ground hazards depend on sensors only. v1 recommends standalone for familiar and indoor settings only (PRD-F-018).
 - **Cane compatibility.** Shaft diameters and shapes vary (rigid, folding, telescopic, graphite, aluminium). **[ASSUMPTION: measure common models]**
@@ -220,6 +237,6 @@ Priority order: **Safety > User confidence > Adoption.**
 **Resolved in v0.6**
 - ~~Mid-journey failure fallback (PRD-NF-007)~~ → the cane plus the fallback ladder.
 - ~~Full-replacement ground-hazard safety bar gates v1~~ → the cane covers ground level in v1; the bar now applies to standalone validation (Later).
-- ~~Haptic placement on a cane~~ → a full 360° grip sleeve (PRD-F-001).
+- ~~Haptic placement on a cane~~ → a full 360° actuator ring, in the grip sleeve in v0.6 and in the baton grip from v0.7 (PRD-F-001).
 - ~~Standalone recommendation~~ → familiar and indoor settings only in v1 (PRD-F-018).
 - ~~Automatic route learning in v1~~ → yes, with confirmation before saving (PRD-F-034).
