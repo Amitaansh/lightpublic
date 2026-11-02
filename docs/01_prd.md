@@ -1,6 +1,6 @@
 # L.I.G.H.T — Product Requirements Document (PRD)
 
-> **Status:** DRAFT v0.7 (form factor: the original baton with a cane clip; founder decisions of 11-01 applied) · **Last updated:** 2026-11-01
+> **Status:** DRAFT v0.7 (form factor: the original baton with a cane clip; founder decisions of 11-01 applied; showcase decisions of 11-02 in §8) · **Last updated:** 2026-11-02
 > Supersedes: PRD v0.5 (2026-09-01) in [`../docs/02_prd.md`](../../docs/02_prd.md) (outside this repo)
 > Companion document: [TRD](02_trd.md)
 > Tags: **[OPEN]** = undecided · **[ASSUMPTION]** = inferred, confirm · **[REC]** = recommendation, pending decision · **[DECIDED 10-31]** / **[DECIDED 11-01]** = confirmed by founder on that date
@@ -191,14 +191,17 @@ This repository holds the public product showcase website. **[DECIDED 10-31]** u
 
 - **Audience:** investors, and anyone who wants to understand what L.I.G.H.T is.
 - **Hosting:** Vercel, project name **beyourlight**. No custom domain yet.
-- **Visual style:** a fresh design, not the pitch deck's or the POC app's styling. The founder will brief it separately in this repository.
+- **Visual style:** a fresh design, not the pitch deck's or the POC app's styling. **[DECIDED 11-02]** It is briefed in [03_design_brief.md](03_design_brief.md): white `#FFFFFF` and blue `#233CCD`, with chartreuse `#DBFE1B` as the signal colour, and a real-time 3D baton as the centrepiece.
+- **Pages:** **[DECIDED 11-02]** three: a hero page that carries the whole story, a contact pop-up, and an About page ([04_site_structure.md](04_site_structure.md)).
+- **Contact:** **[DECIDED 11-02]** a pop-up form for an email and an optional message, sent to the founders' inbox. Nothing is stored and no cookies are set.
+- **Software prototype:** **[DECIDED 11-02]** the site links to the POC app, captioned as built for an earlier version of the device.
 - **Concept stage, said plainly.** No claim of a manufactured, tested or certified device. Renders are labelled as concept visuals.
 - **Lead with the cane add-on.** "Works with the cane you already trust", then reliability, then Guide Notes and Route Memory, then the advanced sensing.
 - **Reliability is a headline feature**, not small print. The fallback ladder (§6.2) should be easy to understand visually.
 - **Founders are shown** by name and role.
 - **Market figures may be shown**, each with its source. Product numbers (price, weight, battery) are labelled as targets.
 - **Do not mention any partner or research organisation**, by name or logo.
-- **Do not present standalone use as the end goal**, and do not say the product replaces the cane. Whether to mention standalone use at all is **[OPEN]**: ask the founder before including it.
+- **Do not present standalone use as the end goal**, and do not say the product replaces the cane. **[DECIDED 11-02]** The site does not mention standalone use. The baton may be shown floating on its own as a product shot, and is shown clipping onto a cane.
 - **New renders are needed** of the baton clipped onto a cane, in the neutral colourway (changed v0.7). The existing `light-v2-*` renders show the right form but the old colours and no clip; use them as references only. Prompts: [image-prompts.md](image-prompts.md); animation briefs: [animations.md](animations.md).
 - **Accessibility is the proof.** The site itself meets WCAG 2.2 AA at minimum and works fully with a screen reader and keyboard.
 
