@@ -10,13 +10,17 @@ The site has one job: help **investors, and anyone curious about the product**, 
 
 This file exists so that any agent picking up the work starts from the same decisions instead of re-deriving them from older material, much of which describes a product that has since changed.
 
-## 2. Current status (2026-10-31)
+## 2. Current status (2026-11-02)
 
-- **No site code exists yet. Do not write any until the founder approves a design direction.**
-- The repo contains only this file, a README, and the product docs:
+- **Site v0.1 is built** (11-02), after the founder approved docs 03–05. Next.js app in this folder; how to run it is in the [README](README.md). It is **not deployed**: deploying is outward-facing, so ask first.
+- Before publishing: the open items flagged by `npm run check:content` (unchecked market sources, unconfirmed milestones, the About-page draft, the prototype URL) and the open questions in [design brief §11](docs/03_design_brief.md#11-open-questions-for-the-founder). `STRICT=1 npm run check:content` must pass.
+- The repo contains this file, a README, the site code, and these docs:
   - [docs/01_prd.md](docs/01_prd.md): Product Requirements v0.7. **Source of truth for what the product is.**
   - [docs/02_trd.md](docs/02_trd.md): Technical Requirements v0.6. Source of truth for how it works.
-- **Next step:** the founder will open a session in this directory and give more context about the website (visual style, references, structure) and about the new renders needed. Your first deliverable is a **design brief** at `docs/03_design_brief.md` with 2–3 distinct visual directions for the founder to choose from. Ask questions before writing it if the founder's brief leaves gaps.
+  - [docs/03_design_brief.md](docs/03_design_brief.md): UI/UX design brief v0.2. The founder briefed the visual direction on 11-02 ("Blue Signal").
+  - [docs/04_site_structure.md](docs/04_site_structure.md): pages, chapters, draft copy, 3D baton choreography, contact flow.
+  - [docs/05_site_components.md](docs/05_site_components.md): component inventory, tokens, 3D model spec, state, tests.
+- **Next step:** the founder reviews the built site, answers the open questions, and supplies the missing content. Then the prototype deploy, then the site deploy.
 - Order of work: **design direction → content and renders → build → deploy.**
 
 ## 3. The product in one minute
@@ -45,7 +49,13 @@ Stage: **concept.** A software prototype exists; no hardware has been built.
 | Market numbers | **May be shown**, each with its source (see §6) |
 | Renders | **New renders are needed** of the cane-mounted form. Prompts: [docs/image-prompts.md](docs/image-prompts.md); animation briefs: [docs/animations.md](docs/animations.md) |
 | Device form for renders (11-01) | The **original L.I.G.H.T baton**, form kept mostly the same, with a more ergonomic grip and a **clip on the baton body** that attaches it to a white cane. The hand holds the baton grip. **Neutral colourway**: graphite grey, soft-white light ring; no cyan or amber. Applied to PRD v0.7 and TRD v0.6 |
+| Render look (11-01) | Renders keep the **photographic style of the existing `light-v2-*` renders**: low-key studio, dark charcoal paper backdrop, one soft key light falling into shadow, crisp rim. This is about the renders; the site's own visual style is still to be briefed |
 | Feature names | "Guide Notes" and "Route Memory" are final |
+| Site visual direction (11-02) | Palette **`#FFFFFF` / `#233CCD` / `#DBFE1B`**: white and blue primary, chartreuse as the signal colour. References and rules in [docs/03_design_brief.md](docs/03_design_brief.md). Effects from klimtwine, teatika and kononenko are recreated in our own code, never copied. Fonts: Archivo and Hedvig Letters Serif (free) |
+| Pages (11-02) | Three: a hero page with everything, a contact pop-up, and an About page |
+| 3D centrepiece (11-02) | Rich interactive WebGL, as progressive enhancement. The baton is **modelled in code** (procedural parts). It **floats free** as the centrepiece and **clips onto a cane** in the cane chapter. The copy never mentions standalone use |
+| Contact (11-02) | Pop-up form: **email + optional message, sent to the founders' inbox**. Nothing stored, no cookies |
+| Prototype link (11-02) | The site links to the POC app (`../light-guidance-experience`), which needs its own deployment first |
 
 ## 5. Rules for anything public
 
@@ -61,7 +71,7 @@ Stage: **concept.** A software prototype exists; no hardware has been built.
 - Publishing **pricing, BOM, margin, LTV or revenue projections** (they exist in the older pitch material but are not approved for the site).
 - Naming **competitors** or showing competitor prices.
 - Publishing **contact details** (emails, phone). Not decided yet.
-- Adding analytics, forms, or anything that collects data.
+- Adding analytics, forms, or anything that collects data. **Exception (11-02):** the contact pop-up (email + optional message to the founders' inbox) is approved.
 
 **Always:**
 - Make the site itself exemplary on accessibility: **WCAG 2.2 AA minimum**, full keyboard and screen-reader use, visible focus, `prefers-reduced-motion` respected, no autoplaying sound, captions or transcripts for any video, meaningful alt text. The audience includes blind people; the site is part of the proof.
@@ -106,5 +116,9 @@ The pitch brief also gives "~€250M/yr" next to the 615,000 users. That number 
 - **Windows 11.** Shells: PowerShell 5.1 and Git Bash. In Node scripts, never `spawn("npm", ...)`; npm is a shell script on Windows. Run tool binaries through `process.execPath`, as `../light-guidance-experience/scripts/local-processes.mjs` does.
 - Line endings are normalised to LF by `.gitattributes`.
 - **Git:** branch `main`, no remote yet. Commit messages follow Conventional Commits (`docs:`, `feat:`, `fix:`). Commit only when the founder asks.
-- Framework and tooling are **not chosen yet**. Propose options in the design brief with a recommendation; the deploy target is Vercel.
+- **Stack (11-02):** Next.js 16 (App Router), React 19, TypeScript **6** (TypeScript 7 has no JS API and breaks `next build`; keep `typescript@^6`), React Three Fiber + drei + three, GSAP, Lenis, zustand, Tailwind 4, Resend, zod. Deploy target: Vercel.
+- **Copy lives in `content/*.ts`.** Never put public text in components. `npm run check:content` enforces §5.
+- **After every `npm run build`, restart `next start`.** A server left running on an older build makes client navigation fall back to full page reloads, which looks like a bug but isn't one.
+- **Playwright:** `@playwright/test` 1.64 expects a browser build that may not be installed. Either run `npx playwright install chromium` (a download: ask first), or point `PLAYWRIGHT_CHROMIUM_PATH` at an installed Chromium (for example `%LOCALAPPDATA%\ms-playwright\chromium-1228\chrome-win64\chrome.exe`).
+- **Posters** (static tier and gallery renders) are generated from the 3D scene: `npm run build && npm run posters`. Re-run after changing `three/rig/choreography.ts` or the baton model.
 - Keep [docs/01_prd.md](docs/01_prd.md) and [docs/02_trd.md](docs/02_trd.md) in step with any product decisions the founder makes in later sessions. Use their tags (`[OPEN]`, `[DECIDED MM-DD]`, `[REC]`, `[ASSUMPTION]`) and keep requirement IDs stable.
