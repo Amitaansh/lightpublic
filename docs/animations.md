@@ -28,9 +28,10 @@ Each animation is tagged with the route that suits it best:
 - **Every animation has a text alternative** that says what it shows (written with the copy, not in the video).
 
 **Look:**
-- Same set as the stills: seamless warm light grey (around `#E8E6E2`), soft studio light, graphite device, soft-white light ring. No cyan, amber, neon or glow.
+- Same look as the stills ([image-prompts.md](image-prompts.md) §1): low-key studio, a seamless charcoal paper backdrop, one large soft key light falling off into darkness, a crisp rim light, graphite device, soft-white light ring. No cyan, amber, neon or glow.
+- Same cane proportions as the stills: a slim shaft, about a third of the baton's thickness, running out of frame in close shots.
 - Motion is **slow, smooth and physical**: long ease-in-out curves, no camera shake, no whip pans, no speed ramps, no lens flares. Think of a quiet product reveal, not a trailer.
-- Diagram colours follow the palette chosen in the design brief ([03_design_brief.md](03_design_brief.md) §6). Until then, use graphite lines on warm grey, with soft white for "active".
+- Diagram colours follow the palette chosen in the design brief ([03_design_brief.md](03_design_brief.md) §6). Until then, use soft grey lines on charcoal, with soft white for "active", to sit with the dark renders.
 
 **Delivery:**
 - Master at 4K (3840 × 2160 or the matching aspect), 24 or 30 fps, ProRes or PNG sequence.
@@ -56,7 +57,7 @@ Each animation is tagged with the route that suits it best:
 **AI video prompt** (image-to-video, attach render 01 as the first frame; also as the last frame if the model supports it):
 
 ```text
-Slow, elegant product reveal in the style of an Apple launch film. The camera drifts smoothly about 15 degrees around the graphite-grey aluminium baton clipped onto the white mobility cane, then eases back to the starting angle. A soft studio light sweeps slowly along the bead-blasted aluminium, revealing its texture, the quick-release clip and the ring of dark-glass sensor windows. The thin soft-white light ring around the baton swells gently once and fades. The device and cane keep their exact shape; nothing deforms, nothing else moves. Seamless warm light-grey studio backdrop, soft shadows, photorealistic, 4K, smooth ease-in-out motion, no camera shake, no text.
+Slow, elegant product reveal in the style of an Apple launch film. The camera drifts smoothly about 15 degrees around the graphite-grey aluminium baton clipped onto the white mobility cane, then eases back to the starting angle. A soft studio light sweeps slowly along the bead-blasted aluminium, revealing its texture, the quick-release clip and the ring of dark-glass sensor windows. The thin soft-white light ring around the baton swells gently once and fades. The device and cane keep their exact shape; nothing deforms, nothing else moves. Low-key studio: seamless charcoal paper backdrop, one large overhead softbox falling off into darkness, crisp rim light, deep soft shadows. The slim white cane shaft runs out of frame at both ends. Photorealistic, 4K, smooth ease-in-out motion, no camera shake, no text.
 ```
 
 **Reduced motion:** render 01 as a still.
@@ -85,7 +86,7 @@ Slow, elegant product reveal in the style of an Apple launch film. The camera dr
 **AI video prompt** (draft only; attach the "baton above the cane" still as the first frame and render 01 as the last):
 
 ```text
-Clean product animation, Apple style. A slim graphite-grey aluminium baton floats just above a white mobility cane lying diagonally in a warm light-grey studio. The baton lowers smoothly and precisely onto the cane, parallel to the shaft, sensor head toward the cane tip; its quick-release clip closes around the white shaft with a small, crisp settle; the cane's black rubber grip slides into place beneath the baton's grip. The thin light ring on the baton glows soft white once to confirm. The camera eases in slightly and holds. Exact shapes, no deformation, smooth physical motion, soft shadows, photorealistic, 4K, no text.
+Clean product animation, Apple style. A slim graphite-grey aluminium baton floats just above a white mobility cane lying diagonally on a seamless charcoal paper backdrop under one large overhead softbox that falls off into darkness; the slim cane shaft, about a third of the baton's thickness, runs out of frame at both ends. The baton lowers smoothly and precisely onto the cane, parallel to the shaft, sensor head toward the cane tip; its quick-release clip closes around the white shaft with a small, crisp settle; the cane's black rubber grip slides into place beneath the baton's grip. The thin light ring on the baton glows soft white once to confirm. The camera eases in slightly and holds. Exact shapes, no deformation, smooth physical motion, crisp rim light, deep soft shadows, photorealistic, 4K, no text.
 ```
 
 **Reduced motion:** render 01, with the copy describing the clip-on.
@@ -221,7 +222,7 @@ Labels such as "Learns your usual routes" and "Remembers fixed obstacles" go in 
 **AI video prompt** (attach render 08 as the first frame):
 
 ```text
-Cinematic, premium, Apple-campaign style. A blind person walks calmly and confidently along a quiet tree-lined European street at golden hour, sweeping a long white mobility cane with a slim graphite-grey device clipped on top near the grip. The camera tracks slowly alongside at walking pace, steady and smooth. Natural motion, soft backlight, warm shopfront lights, gentle film grain. The person, cane and device keep their exact appearance; dignified, independent, unhurried. Photorealistic, 4K, no text, no logos.
+Cinematic, premium, Apple-campaign style. A blind person walks calmly and confidently along a quiet European street at dusk, sweeping a long white mobility cane with a slim graphite-grey device clipped on top near the grip. The camera tracks slowly alongside at walking pace, steady and smooth. Natural motion, cinematic low-key dusk light with warm shopfront lights and a soft rim on the person and the cane, gentle film grain. The person, cane and device keep their exact appearance; dignified, independent, unhurried. Photorealistic, 4K, no text, no logos.
 ```
 
 **Reduced motion:** render 08 as a still.
