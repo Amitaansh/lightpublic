@@ -3,39 +3,35 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLight } from '@/lib/store'
 
-const CAP_MS = 2500
+const CAP_MS = 3000
 const MIN_MS = 900
 
 /**
- * Loader (brief §6.8): blue field, wordmark, a hairline bar that fills in
- * chartreuse from real progress (fonts, then the 3D scene), then wipes up
- * into the hero and the baton's light ring ignites. At most 2.5 s; skipped on
- * repeat visits in a session and under reduced motion. Visual only.
+ * Loader: near-black field, the wordmark, a cyan hairline that fills with
+ * real progress (fonts, then the 3D scene and the hand model), then a slow
+ * fade as the baton's ring ignites. Visual only; skipped on repeat visits.
  */
 export function Loader() {
   const [state, setState] = useState<'loading' | 'done' | 'gone'>('loading')
-  const [progress, setProgress] = useState(0.08)
+  const [progress, setProgress] = useState(0.06)
   const doneRef = useRef(false)
 
   useEffect(() => {
     const html = document.documentElement
-    const finish = (instant: boolean) => {
+    const finish = () => {
       if (doneRef.current) return
       doneRef.current = true
       try {
         sessionStorage.setItem('light-loaded', '1')
       } catch {}
       setProgress(1)
-      window.setTimeout(
-        () => {
-          setState('done')
-          const { set, pulseRing } = useLight.getState()
-          set({ loaderDone: true })
-          pulseRing('ignite')
-          window.setTimeout(() => setState('gone'), 800)
-        },
-        instant ? 0 : 280,
-      )
+      window.setTimeout(() => {
+        setState('done')
+        const { set, pulseRing } = useLight.getState()
+        set({ loaderDone: true })
+        pulseRing('ignite')
+        window.setTimeout(() => setState('gone'), 1200)
+      }, 350)
     }
 
     if (html.classList.contains('skip-loader')) {
@@ -51,14 +47,14 @@ export function Loader() {
     document.fonts?.ready.then(() => {
       fonts = true
     })
-    const cap = window.setTimeout(() => finish(false), CAP_MS)
+    const cap = window.setTimeout(finish, CAP_MS)
     const tick = window.setInterval(() => {
       const { sceneReady, tier } = useLight.getState()
       const scene = sceneReady || tier === 'static'
       const elapsed = performance.now() - start
-      const p = 0.08 + (fonts ? 0.32 : 0.12 * Math.min(1, elapsed / 800)) + (scene ? 0.5 : 0.3 * Math.min(1, elapsed / CAP_MS))
+      const p = 0.06 + (fonts ? 0.3 : 0.1 * Math.min(1, elapsed / 800)) + (scene ? 0.6 : 0.4 * Math.min(1, elapsed / CAP_MS))
       setProgress((prev) => Math.max(prev, Math.min(0.96, p)))
-      if (fonts && scene && elapsed > MIN_MS) finish(false)
+      if (fonts && scene && elapsed > MIN_MS) finish()
     }, 90)
     return () => {
       window.clearTimeout(cap)
@@ -70,15 +66,12 @@ export function Loader() {
   return (
     <div className="loader" data-state={state} aria-hidden="true">
       <div className="loader__inner">
-        <span className="wordmark" style={{ fontSize: '1.75rem' }}>
-          L<span style={{ color: '#dbfe1b' }}>.</span>I<span style={{ color: '#dbfe1b' }}>.</span>G
-          <span style={{ color: '#dbfe1b' }}>.</span>H<span style={{ color: '#dbfe1b' }}>.</span>T
+        <span className="wordmark" style={{ fontSize: '2rem' }}>
+          L<span className="wordmark__dot">.</span>I<span className="wordmark__dot">.</span>G<span className="wordmark__dot">.</span>H
+          <span className="wordmark__dot">.</span>T
         </span>
         <span className="loader__bar">
           <span className="loader__fill" style={{ transform: `scaleX(${progress})` }} />
-        </span>
-        <span className="t-label" style={{ color: '#d3d8f5' }}>
-          finding the light…
         </span>
       </div>
     </div>

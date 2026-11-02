@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test'
 test('contact dialog: open, validate, send, close', async ({ page }) => {
   await page.goto('/')
   await page.waitForLoadState('networkidle')
-  await page.getByRole('link', { name: 'Get in touch' }).first().click()
+  await page.getByRole('link', { name: 'Contact' }).first().click()
   const dialog = page.getByRole('dialog', { name: 'Get in touch' })
   await expect(dialog).toBeVisible()
   await expect(page).toHaveURL(/\/contact$/)

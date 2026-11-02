@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { ContactForm } from '@/components/contact/ContactForm'
-import { Eyebrow } from '@/components/ui/bits'
 import { contact } from '@/content/contact'
 
 export const metadata: Metadata = {
@@ -11,20 +10,15 @@ export const metadata: Metadata = {
 /** /contact loaded directly, or without JavaScript: the same form as a full page. */
 export default function ContactPage() {
   return (
-    <section
-      className="contact-page"
-      data-chapter="contact"
-      data-keyframe="contact"
-      data-chapter-theme="blue"
-      data-n="0"
-      aria-labelledby="contact-title"
-    >
+    <section className="page" aria-labelledby="contact-title">
       <div style={{ maxWidth: '38rem' }}>
-        <Eyebrow>contact</Eyebrow>
-        <h1 id="contact-title" className="t-h1 mt-3">
+        <p className="t-label t-secondary">Contact</p>
+        <h1 id="contact-title" className="t-title" style={{ marginTop: '1rem' }}>
           {contact.title}
         </h1>
-        <p className="t-lead-serif mt-5">{contact.lead}</p>
+        <p className="t-lead" style={{ marginTop: '1.25rem' }}>
+          {contact.lead}
+        </p>
         <ContactForm />
       </div>
     </section>

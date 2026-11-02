@@ -41,7 +41,7 @@ export function CursorFollower() {
       ty = e.clientY
       el.dataset.visible = 'true'
       const target = (e.target as Element | null)?.closest?.('[data-cursor]') as HTMLElement | null
-      const verb = target?.dataset.cursor ?? ''
+      const verb = target?.dataset.cursor ?? (document.body.dataset.overBaton === 'true' ? 'light' : '')
       if (el.dataset.label !== verb) {
         el.dataset.label = verb
         if (label) label.textContent = verb

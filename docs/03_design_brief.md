@@ -1,6 +1,7 @@
 # L.I.G.H.T — Website UI/UX Design Brief (`light-public`)
 
 > **Status:** v0.2 · approved by the founder 11-02 · site v0.1 built · **Last updated:** 2026-11-02
+> **Superseded in part (11-02):** the founder replaced this v0.1 design with v0.2 "Night", a dark scroll-driven film with no visible copy. See [06_film.md](06_film.md); it wins wherever the two differ. This document's accessibility, privacy and content rules still apply.
 > Companion documents: [PRD v0.7](01_prd.md) (§8 Showcase scope) · [TRD v0.6](02_trd.md) · [Site structure](04_site_structure.md) · [Site components](05_site_components.md)
 > Tags: **[OPEN]** = undecided · **[ASSUMPTION]** = inferred, confirm · **[REC]** = recommendation, pending decision · **[DECIDED MM-DD]** = confirmed by founder
 > No site code is written until the founder approves this brief and documents 04–05.

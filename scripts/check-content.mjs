@@ -42,12 +42,7 @@ for (const f of files) {
 }
 
 const read = (p) => readFileSync(path.join(root, p), 'utf8')
-const unchecked = (read('content/stats.ts').match(/checked: null/g) ?? []).length
-if (unchecked) warnings.push(`content/stats.ts: ${unchecked} market figure(s) not yet re-checked against their source`)
-const unconfirmed = (read('content/milestones.ts').match(/confirmed: false/g) ?? []).length
-if (unconfirmed) warnings.push(`content/milestones.ts: ${unconfirmed} milestone(s) not yet confirmed by the founders`)
 if (/draft: true/.test(read('content/about.ts'))) warnings.push('content/about.ts: "Why we started" is still a draft; replace it with the founders’ own words')
-if (/prototypeUrl: null/.test(read('content/site.ts'))) warnings.push('content/site.ts: prototype URL not set; the site says the link is coming soon')
 
 for (const w of warnings) console.warn('warn ', w)
 for (const e of errors) console.error('error', e)

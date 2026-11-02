@@ -27,7 +27,7 @@ export function MotionInit() {
   return null
 }
 
-/** Global motion switch in the header (brief §6.6, WCAG 2.2.2). */
+/** Global motion switch (WCAG 2.2.2): off = still frames instead of the film. */
 export function MotionToggle() {
   const motion = useLight((s) => s.motion)
   const toggle = () => {
@@ -39,9 +39,9 @@ export function MotionToggle() {
     useLight.getState().set({ motion: next })
   }
   return (
-    <button type="button" className="pill-toggle" aria-pressed={motion === 'on'} onClick={toggle}>
-      <span className="pill-toggle__dot" aria-hidden="true" />
-      Motion: {motion === 'on' ? 'on' : 'off'}
+    <button type="button" className="pill" aria-pressed={motion === 'on'} onClick={toggle}>
+      <span className="pill__dot" aria-hidden="true" />
+      <span className="pill__text">Motion</span>
     </button>
   )
 }

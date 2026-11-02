@@ -8,37 +8,39 @@ test('skip link moves focus to the main content', async ({ page }) => {
   await expect(page.locator('#main')).toBeFocused()
 })
 
-test('fallback ladder works by keyboard', async ({ page }) => {
-  await page.goto('/#reliability')
-  await page.getByRole('tab', { name: /Full/ }).focus()
-  await page.keyboard.press('ArrowRight')
-  await expect(page.getByRole('tab', { name: /Reduced/ })).toHaveAttribute('aria-selected', 'true')
-  await page.keyboard.press('End')
-  await expect(page.getByRole('tab', { name: /Cane/ })).toBeFocused()
-  await expect(page.getByRole('tabpanel')).toContainText('your cane still works')
-})
-
-test('haptics demo announces where the grip vibrates', async ({ page }) => {
-  await page.goto('/#haptics')
-  await page.getByRole('radio', { name: 'Right', exact: true }).check()
-  await expect(page.locator('.live-text')).toContainText('Pole, right, close: the right side of the grip vibrates strongly.')
-})
-
-test('inside: each part opens its description', async ({ page }) => {
-  await page.goto('/#inside')
-  const btn = page.getByRole('button', { name: 'Independent safety-core chip' })
+test('Lights out button switches the room lights', async ({ page }) => {
+  await page.goto('/')
+  const btn = page.getByRole('button', { name: /Lights out/ })
+  await expect(btn).toHaveAttribute('aria-pressed', 'false')
   await btn.click()
-  await expect(btn).toHaveAttribute('aria-expanded', 'true')
-  await expect(page.locator('#hs-detail-safety')).toBeVisible()
+  await expect(btn).toHaveAttribute('aria-pressed', 'true')
+  await expect(page.locator('html')).toHaveAttribute('data-lights', 'out')
 })
 
-test('motion toggle turns the 3D scene off and shows posters', async ({ page }) => {
+test('scrolling moves the film; the closing buttons appear at the end', async ({ page }) => {
+  await page.goto('/?t=0.99')
+  await page.waitForTimeout(2500)
+  const close = page.locator('.title-card--close')
+  await expect(close).toHaveAttribute('data-inert', 'false')
+  await expect(page.getByRole('link', { name: 'Get in touch' }).last()).toBeVisible()
+})
+
+test('keyboard focus on the closing buttons brings the end of the film into view', async ({ page }) => {
   await page.goto('/')
   await page.waitForTimeout(1500)
-  await page.getByRole('button', { name: /Motion: on/ }).click()
+  await page.getByRole('link', { name: 'About the project' }).focus()
+  await page.waitForTimeout(1500)
+  const atEnd = await page.evaluate(() => window.scrollY + window.innerHeight >= document.querySelector('.film > div')!.getBoundingClientRect().bottom + window.scrollY - 2)
+  expect(atEnd).toBe(true)
+})
+
+test('motion off shows still frames instead of the 3D film', async ({ page }) => {
+  await page.goto('/')
+  await page.waitForTimeout(1500)
+  await page.getByRole('button', { name: /Motion/ }).click()
   await expect(page.locator('html')).toHaveAttribute('data-motion', 'off')
   await expect(page.locator('.scene-layer')).toHaveCount(0)
-  await expect(page.locator('img.poster').first()).toBeAttached()
+  await expect(page.locator('.film__poster img')).toHaveAttribute('src', /\/posters\/\w+\.webp/)
 })
 
 test.describe('reduced motion', () => {
@@ -55,18 +57,17 @@ test.describe('reduced motion', () => {
 test.describe('without JavaScript', () => {
   test.use({ javaScriptEnabled: false })
 
-  test('all content is there and the loader is hidden', async ({ page }) => {
+  test('the film degrades to stills, and the loader is hidden', async ({ page }) => {
     await page.goto('/')
     await expect(page.locator('.loader')).toBeHidden()
-    await expect(page.getByRole('heading', { name: 'Never fails silently.' })).toBeVisible()
-    await expect(page.getByRole('heading', { name: 'Where we are.' })).toBeVisible()
+    await expect(page.locator('img.film__noscript-poster')).toHaveCount(10)
+    await expect(page.getByRole('link', { name: 'Get in touch' }).last()).toBeVisible()
   })
 
   test('the contact form posts without JavaScript', async ({ page }) => {
     await page.goto('/contact')
     await page.getByLabel('Your email').fill('nojs@example.com')
     await page.getByRole('button', { name: 'Send' }).click()
-    await expect(page.getByText('nojs@example.com')).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Message sent' })).toBeVisible()
   })
 })

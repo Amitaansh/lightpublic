@@ -33,8 +33,8 @@ export function ContactForm({ onDone }: { onDone?: () => void }) {
 
   if (state.status === 'sent') {
     return (
-      <div className="grid gap-4" style={{ marginTop: '1.5rem' }}>
-        <h2 ref={resultRef} tabIndex={-1} className="t-h3">
+      <div style={{ marginTop: '1.5rem', display: 'grid', gap: '1rem' }}>
+        <h2 ref={resultRef} tabIndex={-1} className="t-lead">
           {contact.sentTitle}
         </h2>
         <p className="t-body">{contact.sentBody(state.email ?? 'you')}</p>
@@ -53,7 +53,7 @@ export function ContactForm({ onDone }: { onDone?: () => void }) {
   const messageError = state.status === 'invalid' ? state.errors?.message : undefined
 
   return (
-    <form action={formAction} noValidate className="grid gap-5" style={{ marginTop: '1.5rem' }}>
+    <form action={formAction} noValidate style={{ marginTop: '1.75rem', display: 'grid', gap: '1.25rem' }}>
       {state.status === 'error' && (
         <p ref={errorRef} tabIndex={-1} role="alert" className="form-error">
           {state.error}
@@ -109,7 +109,7 @@ export function ContactForm({ onDone }: { onDone?: () => void }) {
         <input id="contact-company" name="company" type="text" tabIndex={-1} autoComplete="off" />
       </div>
       <input type="hidden" name="openedAt" value={openedAt} />
-      <div className="flex flex-wrap items-center gap-4">
+      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '1rem' }}>
         <button type="submit" className="btn btn--primary btn--plain" disabled={pending} aria-disabled={pending}>
           {pending ? contact.sending : contact.send}
         </button>

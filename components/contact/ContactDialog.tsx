@@ -34,7 +34,6 @@ export function ContactDialog() {
     <dialog
       ref={ref}
       className="dialog"
-      data-theme="blue"
       aria-labelledby="contact-title"
       onCancel={(e) => {
         e.preventDefault()
@@ -50,10 +49,10 @@ export function ContactDialog() {
             <path d="M3 3L13 13M13 3L3 13" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
           </svg>
         </button>
-        <h2 id="contact-title" className="t-h2" style={{ paddingRight: '3.5rem' }}>
+        <h2 id="contact-title" className="t-title" style={{ paddingRight: '3.5rem' }}>
           {contact.title}
         </h2>
-        <p className="t-body mt-3">{contact.lead}</p>
+        <p className="t-body t-secondary" style={{ marginTop: '0.75rem' }}>{contact.lead}</p>
         <ContactForm onDone={close} />
       </div>
     </dialog>

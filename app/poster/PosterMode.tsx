@@ -3,26 +3,24 @@
 import { useEffect } from 'react'
 import { useLight } from '@/lib/store'
 
-/** Posters shown on blue chapters get white diagram edges. */
-const BLUE = ['what-it-adds', 'reliability', 'route-memory', 'stop', 'mockups', 'why', 'contact-cta', 'about', 'gallery']
-
-export function PosterMode({ name }: { name: string }) {
+export function PosterMode({ t, lightsOut }: { t: number; lightsOut: boolean }) {
   useEffect(() => {
     const html = document.documentElement
     html.classList.add('poster-mode')
-    const blue = BLUE.some((b) => name.startsWith(b))
-    useLight.getState().set({ poster: name, loaderDone: true, themeOverride: blue ? 'blue' : 'white' })
-    let t: number | undefined
-    const unsub = useLight.subscribe((s) => {
-      if (s.sceneReady && !t) t = window.setTimeout(() => (html.dataset.posterReady = '1'), 900)
-    })
-    if (useLight.getState().sceneReady) t = window.setTimeout(() => (html.dataset.posterReady = '1'), 900)
+    useLight.getState().set({ poster: t, lightsOut, loaderDone: true })
+    let timer: number | undefined
+    const ready = () => {
+      if (!timer) timer = window.setTimeout(() => (html.dataset.posterReady = '1'), 1600)
+    }
+    const unsub = useLight.subscribe((s) => s.sceneReady && ready())
+    if (useLight.getState().sceneReady) ready()
     return () => {
       unsub()
-      window.clearTimeout(t)
+      window.clearTimeout(timer)
       html.classList.remove('poster-mode')
       delete html.dataset.posterReady
+      useLight.getState().set({ poster: null })
     }
-  }, [name])
-  return <p className="visually-hidden">Poster: {name}</p>
+  }, [t, lightsOut])
+  return <p className="visually-hidden">Poster at film position {t}</p>
 }

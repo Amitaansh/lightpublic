@@ -33,7 +33,8 @@ export function SceneLayer() {
 
   useEffect(() => {
     const current = useLight.getState().tier
-    const next = detectTier(motion, Boolean(poster))
+    const forced = new URLSearchParams(window.location.search).get('tier') as Tier | null
+    const next = forced ?? detectTier(motion, poster !== null)
     // Never step back up within a session once performance has dropped a tier.
     if (current === 'lite' && next === 'full') return
     useLight.getState().set({ tier: next })

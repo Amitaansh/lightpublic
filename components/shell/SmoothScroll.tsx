@@ -19,7 +19,7 @@ export function SmoothScroll() {
 
   useEffect(() => {
     if (motion === 'off') return
-    const lenis = new Lenis({ lerp: 0.1, anchors: false, autoRaf: false })
+    const lenis = new Lenis({ lerp: 0.09, anchors: false, autoRaf: false, syncTouch: false })
     setLenis(lenis)
     lenis.on('scroll', ScrollTrigger.update)
     const tick = (time: number) => lenis.raf(time * 1000)

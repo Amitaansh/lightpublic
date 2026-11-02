@@ -27,7 +27,7 @@
 | **How it's held** | Hand on the sleeve over the cane's grip | **Hand on the baton grip.** The baton sits on top of the cane, parallel to the shaft, sensor head toward the tip. The cane's own grip nests under the baton grip, so the hand holds both as one handle **[DECIDED 11-01: hand on baton grip; nesting layout is REC]** |
 | **Haptics** | Actuator ring in the sleeve | **Actuator ring inside the baton grip** (PRD-F-001). No cable between parts |
 | **Standalone** | Sleeve and sensor unit join into one handheld | **Unclip the baton.** It is already a complete handheld |
-| **Colourway (renders)** | — | Neutral: graphite grey, soft-white light ring. No cyan or amber **[DECIDED 11-01]** |
+| **Colourway (renders)** | — | Neutral: graphite grey, soft-white light ring. No cyan or amber **[DECIDED 11-01]**. **Changed: the light ring glows cyan [DECIDED 11-02]** |
 | **Weight budget** | 750–800 g | **Needs reconciling with the baton's size** (PRD-NF-004) **[OPEN]** |
 
 ## 1. Overview & goals
@@ -191,10 +191,9 @@ This repository holds the public product showcase website. **[DECIDED 10-31]** u
 
 - **Audience:** investors, and anyone who wants to understand what L.I.G.H.T is.
 - **Hosting:** Vercel, project name **beyourlight**. No custom domain yet.
-- **Visual style:** a fresh design, not the pitch deck's or the POC app's styling. **[DECIDED 11-02]** It is briefed in [03_design_brief.md](03_design_brief.md): white `#FFFFFF` and blue `#233CCD`, with chartreuse `#DBFE1B` as the signal colour, and a real-time 3D baton as the centrepiece.
-- **Pages:** **[DECIDED 11-02]** three: a hero page that carries the whole story, a contact pop-up, and an About page ([04_site_structure.md](04_site_structure.md)).
+- **Visual style:** **[DECIDED 11-02, v0.2]** charcoal (from the concept render), white text and cyan accents; Hedvig Letters Serif and Switzer only. The home page is a scroll-driven 3D film with no visible copy: the baton floats, a hand picks it up and shows how to hold it, it clips onto a cane, and the vibration, Route Memory, STOP and exploded views follow ([06_film.md](06_film.md)). Each scene is described in the page for screen readers. (v0.1's blue/white/chartreuse design in 03_design_brief.md is superseded.)
+- **Pages:** **[DECIDED 11-02]** three: the film, a contact pop-up, and an About page with purpose and founders. The timeline, market figures and prototype link are no longer on the site.
 - **Contact:** **[DECIDED 11-02]** a pop-up form for an email and an optional message, sent to the founders' inbox. Nothing is stored and no cookies are set.
-- **Software prototype:** **[DECIDED 11-02]** the site links to the POC app, captioned as built for an earlier version of the device.
 - **Concept stage, said plainly.** No claim of a manufactured, tested or certified device. Renders are labelled as concept visuals.
 - **Lead with the cane add-on.** "Works with the cane you already trust", then reliability, then Guide Notes and Route Memory, then the advanced sensing.
 - **Reliability is a headline feature**, not small print. The fallback ladder (§6.2) should be easy to understand visually.

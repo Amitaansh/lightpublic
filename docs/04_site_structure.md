@@ -1,6 +1,7 @@
 # L.I.G.H.T — Site Structure (`light-public`)
 
 > **Status:** DRAFT v0.1 · **Last updated:** 2026-11-02
+> **Superseded in part (11-02):** the founder replaced this v0.1 design with v0.2 "Night", a dark scroll-driven film with no visible copy. See [06_film.md](06_film.md); it wins wherever the two differ. This document's accessibility, privacy and content rules still apply.
 > Companion documents: [Design brief](03_design_brief.md) · [Site components](05_site_components.md) · [PRD v0.7](01_prd.md) · [TRD v0.6](02_trd.md)
 > Tags: **[OPEN]** · **[ASSUMPTION]** · **[REC]** · **[DECIDED MM-DD]** · **[CONFIRM]** = a fact or date the founder must check before publishing
 > All copy below is a **working draft** (marked *Draft*). It follows the rules in [AGENTS.md §5](../AGENTS.md) and is finalised after review.
