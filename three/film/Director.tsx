@@ -7,8 +7,9 @@ import * as THREE from 'three'
 import { film, useLight } from '@/lib/store'
 import { FALLBACK_POWERED } from '../baton/buildInternals'
 import { buildBaton, type BatonHandles } from '../baton/buildBaton'
+import { CANE_R, CANE_Z, GRIP_WAIST, R, Y } from '../baton/dimensions'
 import { buildCane } from '../cane/buildCane'
-import { createHandRig, type HandRig } from '../hand/handRig'
+import { createHandRig, type GripContact, type HandRig } from '../hand/handRig'
 import { live, pointer } from './live'
 import { frameAt } from './shots'
 import { motorStrengths, obstaclesAt } from './world'
@@ -54,9 +55,45 @@ function ringBump(ring: { kind: string; at: number } | null, now: number) {
   }
 }
 
+/** The baton's outer radius at height y (baton space), matching buildBaton's lathe profiles. */
+function batonRadius(y: number) {
+  if (y < Y.tip || y > Y.cap) return 0
+  if (y > Y.bodyTop && y < Y.gripTop) {
+    const t = (y - Y.bodyTop) / (Y.gripTop - Y.bodyTop)
+    return R - (R - GRIP_WAIST) * Math.sin(Math.PI * t)
+  }
+  return R
+}
+
+/** Cane grip (rubber) and shaft, matching buildCane: grip from y = -0.02 to 0.095. */
+function caneRadius(y: number) {
+  if (y > 0.095) return 0
+  return y >= -0.02 ? 0.0096 : CANE_R
+}
+
+/**
+ * What the hand closes around, in its own rest space: the baton grip and,
+ * once it is nested underneath, the cane's grip. Baton Y is hand +Z, baton Z
+ * is hand +Y (see HAND.basis), and HAND.anchor sits on the grip centre line.
+ */
+const GRIP_CONTACT: GripContact = {
+  lines: [
+    {
+      origin: HAND.anchor.clone(),
+      dir: new THREE.Vector3(0, 0, 1),
+      radius: (s) => batonRadius(0.053 + s),
+    },
+    {
+      origin: HAND.anchor.clone().add(new THREE.Vector3(0, CANE_Z, 0)),
+      dir: new THREE.Vector3(0, 0, 1),
+      radius: (s, pose) => caneRadius(0.053 + s) * smooth(clamp01(((pose.cane ?? 0) - 0.85) / 0.15)),
+    },
+  ],
+}
+
 function HandModel({ onReady }: { onReady: (rig: HandRig) => void }) {
   const gltf = useGLTF('/models/hand-right.glb')
-  const rig = useMemo(() => createHandRig(gltf.scene), [gltf.scene])
+  const rig = useMemo(() => createHandRig(gltf.scene, GRIP_CONTACT), [gltf.scene])
   useEffect(() => {
     onReady(rig)
     return () => rig.dispose()
@@ -240,7 +277,7 @@ export function Director() {
       ha.visible = f.hand.show > 0.01
     }
     if (hand.current) {
-      hand.current.setPose({ grip: f.hand.grip, reach: f.hand.reach })
+      hand.current.setPose({ grip: f.hand.grip, reach: f.hand.reach, cane: f.cane.show > 0.01 ? f.cane.enter : 0 })
       hand.current.setOpacity(f.hand.show)
     }
 

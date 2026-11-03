@@ -23,7 +23,28 @@ export type HandPose = {
   grip: number
   /** Extra spread of the fingers when reaching, 0..1. */
   reach: number
+  /** How far the cane's grip is nested under the baton, 0..1 (fingers wrap it too). */
+  cane?: number
 }
+
+/**
+ * What the fingers close around, in the hand's rest (armature) space. Each
+ * joint is kept at least `radius(along) + joint thickness` from every line,
+ * so the fingers stop on the surface instead of passing through it.
+ */
+export type GripContact = {
+  lines: {
+    /** A point on the centre line, and its unit direction. */
+    origin: THREE.Vector3
+    dir: THREE.Vector3
+    /** Surface radius at signed distance `s` from `origin` along `dir`; 0 = nothing there. */
+    radius: (s: number, pose: HandPose) => number
+  }[]
+}
+
+// Approximate joint radii of an adult hand (m): proximal, intermediate, distal, tip.
+const FINGER_THICK = [0.0098, 0.0088, 0.0078, 0.0066]
+const THUMB_THICK = [0.0115, 0.0098, 0.0086, 0.0072]
 
 export type HandRig = {
   root: THREE.Object3D
@@ -34,7 +55,7 @@ export type HandRig = {
   dispose: () => void
 }
 
-export function createHandRig(scene: THREE.Object3D): HandRig {
+export function createHandRig(scene: THREE.Object3D, contact?: GripContact): HandRig {
   let mesh: THREE.SkinnedMesh | null = null
   scene.traverse((o) => {
     if ((o as THREE.SkinnedMesh).isSkinnedMesh) mesh = o as THREE.SkinnedMesh
@@ -77,8 +98,12 @@ export function createHandRig(scene: THREE.Object3D): HandRig {
   const fingerAxes = fingerChains.map((c) => flexAxis(c, 1))
   const thumbFlex = flexAxis(thumbChain, 0)
 
-  /** Rotate the chain from each pivot onwards; pivots[i] rotates by angles[i] about axes[i] (rest frame). */
-  const solve = (chain: Rest[], pivots: number[], rotations: { axis: THREE.Vector3; angle: number }[][]) => {
+  type Rot = { axis: THREE.Vector3; angle: number }
+
+  /** Forward kinematics: joint positions and rotations for the given pivot rotations (rest frame). */
+  const fk = (chain: Rest[], pivots: number[], rotations: Rot[][], scales: number[]) => {
+    const ps: THREE.Vector3[] = []
+    const qs: THREE.Quaternion[] = []
     let R = new THREE.Quaternion()
     let p = chain[0].p.clone()
     for (let k = 0; k < chain.length; k++) {
@@ -86,20 +111,92 @@ export function createHandRig(scene: THREE.Object3D): HandRig {
       if (pi >= 0) {
         for (const r of rotations[pi]) {
           const ax = r.axis.clone().applyQuaternion(R)
-          R = new THREE.Quaternion().setFromAxisAngle(ax, r.angle).multiply(R)
+          R = new THREE.Quaternion().setFromAxisAngle(ax, r.angle * scales[pi]).multiply(R)
         }
       }
-      const j = chain[k]
-      j.bone.position.copy(p)
-      j.bone.quaternion.copy(R).multiply(j.q)
-      if (k + 1 < chain.length) p = p.clone().add(chain[k + 1].p.clone().sub(j.p).applyQuaternion(R))
+      ps.push(p)
+      qs.push(R.clone())
+      if (k + 1 < chain.length) p = p.clone().add(chain[k + 1].p.clone().sub(chain[k].p).applyQuaternion(R))
     }
+    return { ps, qs }
+  }
+
+  const tmp = new THREE.Vector3()
+  /** How far the point sits inside any contact surface (m); <= 0 means clear. */
+  const depth = (p: THREE.Vector3, thick: number, pose: HandPose) => {
+    if (!contact) return -1
+    let worst = -Infinity
+    for (const l of contact.lines) {
+      tmp.copy(p).sub(l.origin)
+      const s = tmp.dot(l.dir)
+      const r = l.radius(s, pose)
+      if (r <= 0) continue
+      const d = tmp.addScaledVector(l.dir, -s).length()
+      worst = Math.max(worst, r + thick - d)
+    }
+    return worst
+  }
+
+  /** Deepest penetration of the chain from joint `from` onwards (joints and segment midpoints). */
+  const chainDepth = (ps: THREE.Vector3[], from: number, thick: number[], pose: HandPose) => {
+    let worst = -Infinity
+    const off = ps.length - thick.length // the first joints (metacarpal) sit in the palm
+    for (let k = Math.max(from, off); k < ps.length; k++) {
+      const t = thick[k - off]
+      worst = Math.max(worst, depth(ps[k], t, pose))
+      if (k + 1 < ps.length) {
+        const mid = ps[k].clone().lerp(ps[k + 1], 0.5)
+        worst = Math.max(worst, depth(mid, (t + thick[Math.min(k + 1 - off, thick.length - 1)]) / 2, pose))
+      }
+    }
+    return worst
+  }
+
+  /**
+   * Curl the chain pivot by pivot, from the knuckle out. Each pivot turns as far
+   * as the pose asks, unless that would push the finger into the grip: then it
+   * stops where the finger meets the surface (bisection), and the next joint
+   * carries on curling around it.
+   */
+  const solve = (chain: Rest[], pivots: number[], rotations: Rot[][], thick: number[], pose: HandPose, allowed: number) => {
+    const scales = pivots.map(() => 1)
+    if (contact) {
+      // Rotations that already start inside the surface (the rest pose) are left alone.
+      const start = chainDepth(fk(chain, pivots, rotations, pivots.map(() => 0)).ps, 0, thick, pose)
+      const limit = Math.max(allowed, start)
+      for (let i = 0; i < pivots.length; i++) {
+        const test = (s: number) => {
+          scales[i] = s
+          for (let j = i + 1; j < pivots.length; j++) scales[j] = 0
+          return chainDepth(fk(chain, pivots, rotations, scales).ps, pivots[i] + 1, thick, pose) <= limit
+        }
+        if (!test(1)) {
+          let lo = 0
+          let hi = 1
+          if (!test(0)) hi = 0
+          for (let it = 0; it < 12 && hi > 0; it++) {
+            const m = (lo + hi) / 2
+            if (test(m)) lo = m
+            else hi = m
+          }
+          scales[i] = lo
+        } else scales[i] = 1
+      }
+    }
+    const { ps, qs } = fk(chain, pivots, rotations, scales)
+    chain.forEach((j, k) => {
+      j.bone.position.copy(ps[k])
+      j.bone.quaternion.copy(qs[k]).multiply(j.q)
+    })
   }
 
   // Per finger: a little more curl toward the pinky, as in a real grip.
   const fingerBias = [0, 4, 8, 12]
 
-  const setPose = ({ grip, reach }: HandPose) => {
+  const setPose = (pose: HandPose) => {
+    const { grip, reach } = pose
+    // The skin may press a little into the soft-touch grip, never further.
+    const allowed = 0.0012
     const g = THREE.MathUtils.clamp(grip, 0, 1)
     const open = (1 - g) * reach
     fingerChains.forEach((chain, i) => {
@@ -113,7 +210,7 @@ export function createHandRig(scene: THREE.Object3D): HandRig {
         ],
         [{ axis: ax, angle: (8 + (78 + fingerBias[i]) * g) * DEG }],
         [{ axis: ax, angle: (5 + 46 * g) * DEG }],
-      ])
+      ], FINGER_THICK, pose, allowed)
     })
     // Thumb: swings across the palm and lies along the top of the grip.
     solve(thumbChain, [0, 1, 2], [
@@ -124,7 +221,7 @@ export function createHandRig(scene: THREE.Object3D): HandRig {
       ],
       [{ axis: thumbFlex, angle: (6 + 12 * g) * DEG }],
       [{ axis: thumbFlex, angle: (6 + 22 * g) * DEG }],
-    ])
+    ], THUMB_THICK, pose, allowed)
     skinned.skeleton.update()
   }
 
