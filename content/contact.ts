@@ -2,6 +2,16 @@
 export const contact = {
   title: 'Get in touch',
   lead: 'Investors, instructors, cane users, or just curious: write to us.',
+  roleLegend: 'I’m… (optional)',
+  /** Who is writing, so the right founder replies. `as` matches the links in content/home.ts. */
+  roles: [
+    { value: 'cane-user', label: 'A white cane user', group: 'tester' },
+    { value: 'instructor', label: 'An orientation and mobility instructor', group: 'tester' },
+    { value: 'family', label: 'Family or a friend of a cane user', group: 'tester' },
+    { value: 'investor', label: 'An investor or potential partner', group: 'investor' },
+    { value: 'other', label: 'Something else', group: 'other' },
+  ],
+  testerHint: 'If you’d like to help test L.I.G.H.T, tell us roughly where you are and how you get around. We’ll be in touch when testing starts.',
   emailLabel: 'Your email',
   emailHint: 'So we can reply.',
   messageLabel: 'Message (optional)',

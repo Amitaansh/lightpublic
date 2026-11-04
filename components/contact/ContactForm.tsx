@@ -20,7 +20,15 @@ export function ContactForm({ onDone }: { onDone?: () => void }) {
   const resultRef = useRef<HTMLHeadingElement>(null)
   const errorRef = useRef<HTMLParagraphElement>(null)
 
-  useEffect(() => setOpenedAt(Date.now()), [])
+  const [role, setRole] = useState('')
+
+  useEffect(() => {
+    setOpenedAt(Date.now())
+    // Links from "Get involved" preselect who is writing: /contact?as=investor
+    const as = new URLSearchParams(window.location.search).get('as')
+    if (as && contact.roles.some((r) => r.value === as)) setRole(as)
+  }, [])
+  const isTester = contact.roles.find((r) => r.value === role)?.group === 'tester'
 
   useEffect(() => {
     if (state.status === 'invalid') {
@@ -59,6 +67,16 @@ export function ContactForm({ onDone }: { onDone?: () => void }) {
           {state.error}
         </p>
       )}
+      <fieldset className="form-field form-roles">
+        <legend>{contact.roleLegend}</legend>
+        {contact.roles.map((r) => (
+          <label key={r.value} className="form-role">
+            <input type="radio" name="role" value={r.value} checked={role === r.value} onChange={() => setRole(r.value)} />
+            <span>{r.label}</span>
+          </label>
+        ))}
+        {isTester && <p className="form-hint">{contact.testerHint}</p>}
+      </fieldset>
       <div className="form-field">
         <label htmlFor="contact-email">{contact.emailLabel}</label>
         <span id="contact-email-hint" className="form-hint">

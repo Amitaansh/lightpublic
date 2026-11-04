@@ -10,7 +10,7 @@ import { buildBaton, type BatonHandles } from '../baton/buildBaton'
 import { CANE_R, CANE_Z, GRIP_WAIST, R, Y } from '../baton/dimensions'
 import { buildCane } from '../cane/buildCane'
 import { createHandRig, type GripContact, type HandRig } from '../hand/handRig'
-import { live, pointer } from './live'
+import { ALERT_RED, CYAN, live, pointer } from './live'
 import { frameAt } from './shots'
 import { motorStrengths, obstaclesAt } from './world'
 
@@ -72,21 +72,21 @@ function caneRadius(y: number) {
 }
 
 /**
- * What the hand closes around, in its own rest space: the baton grip and,
- * once it is nested underneath, the cane's grip. Baton Y is hand +Z, baton Z
- * is hand +Y (see HAND.basis), and HAND.anchor sits on the grip centre line.
+ * What the hand closes around, in baton space: the baton grip and, once it is
+ * nested underneath, the cane's grip. The Director passes the baton-to-hand
+ * transform every frame, so the surfaces stay right while the hand approaches.
  */
 const GRIP_CONTACT: GripContact = {
   lines: [
     {
-      origin: HAND.anchor.clone(),
-      dir: new THREE.Vector3(0, 0, 1),
-      radius: (s) => batonRadius(0.053 + s),
+      origin: new THREE.Vector3(0, 0, 0),
+      dir: new THREE.Vector3(0, 1, 0),
+      radius: (s) => batonRadius(s),
     },
     {
-      origin: HAND.anchor.clone().add(new THREE.Vector3(0, CANE_Z, 0)),
-      dir: new THREE.Vector3(0, 0, 1),
-      radius: (s, pose) => caneRadius(0.053 + s) * smooth(clamp01(((pose.cane ?? 0) - 0.85) / 0.15)),
+      origin: new THREE.Vector3(0, 0, CANE_Z),
+      dir: new THREE.Vector3(0, 1, 0),
+      radius: (s, pose) => caneRadius(s) * smooth(clamp01(((pose.cane ?? 0) - 0.85) / 0.15)),
     },
   ],
 }
@@ -112,7 +112,7 @@ export function Director() {
   const { camera, size } = useThree()
   const persp = camera as THREE.PerspectiveCamera
   const raycaster = useMemo(() => new THREE.Raycaster(), [])
-  const state = useRef({ prevEnter: 0, prevLevel: 0, prevShock: 0, lights: 0, hoverCheck: 0, powered: new Map<THREE.Material, number>() })
+  const state = useRef({ prevEnter: 0, prevLevel: 0, prevShock: 0, lights: 0, hoverCheck: 0, powered: new Map<THREE.Material, number>(), toHand: new THREE.Matrix4(), ringColor: new THREE.Color() })
 
   useEffect(
     () => () => {
@@ -240,6 +240,13 @@ export function Director() {
     const L = S.lights
 
     // ---- 7. Light ring, buttons -----------------------------------------------------
+    // STOP turns the alert red: the ring, the motors and the haptic halo, from the
+    // moment the threat appears until the scene hands over to the exploded view.
+    live.alert = f.scene === 'stop' ? smooth(clamp01((f.u - 0.2) / 0.12)) * (1 - smooth(clamp01((f.u - 0.88) / 0.12))) : 0
+    S.ringColor.copy(CYAN).lerp(ALERT_RED, live.alert)
+    baton.materials.ring.color.copy(S.ringColor)
+    baton.materials.ring.emissive.copy(S.ringColor)
+    baton.ringLight.color.copy(S.ringColor)
     const bumpRing = ringBump(s.ring, now)
     const breathe = floating ? 0.25 * Math.sin(t * 1.6) : 0
     const ringI = 2.2 + breathe + f.ringBoost * 2.5 + bumpRing + L * 4 + live.stopAll * 4
@@ -276,8 +283,12 @@ export function Director() {
       ha.rotateZ(a * 0.35)
       ha.visible = f.hand.show > 0.01
     }
-    if (hand.current) {
-      hand.current.setPose({ grip: f.hand.grip, reach: f.hand.reach, cane: f.cane.show > 0.01 ? f.cane.enter : 0 })
+    if (hand.current && ha) {
+      // Baton and hand anchor share a parent and the baton root sits at its origin,
+      // so baton space → hand rest space is the inverse of the anchor's local matrix.
+      ha.updateMatrix()
+      S.toHand.copy(ha.matrix).invert()
+      hand.current.setPose({ grip: f.hand.grip, reach: f.hand.reach, cane: f.cane.show > 0.01 ? f.cane.enter : 0, toHand: S.toHand })
       hand.current.setOpacity(f.hand.show)
     }
 
@@ -295,6 +306,7 @@ export function Director() {
     S.prevShock = f.shock
     baton.actuators.forEach((act, k) => {
       act.glow.emissiveIntensity = (Math.max(live.motors[k], live.stopAll) * 6) as number
+      act.glow.emissive.copy(S.ringColor)
     })
 
     // ---- 11. Hover: show a pointer over the baton -----------------------------------------
