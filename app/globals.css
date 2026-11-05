@@ -590,6 +590,78 @@ html.poster-mode .film-caption {
   display: none;
 }
 
+/* Blueprint labels on the exploded baton (Inside scene). */
+.callouts {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  pointer-events: none;
+  opacity: 0;
+}
+.callouts__lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.callouts__lines path {
+  fill: none;
+  stroke: var(--cyan);
+  stroke-width: 1;
+  opacity: 0.7;
+}
+.callouts__lines circle {
+  fill: var(--bg-deep);
+  stroke: var(--cyan);
+  stroke-width: 1.5;
+}
+.callout {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0.3rem 0.55rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--fg);
+  background: rgba(8, 8, 8, 0.72);
+  border: 1px solid rgba(46, 230, 255, 0.45);
+  border-radius: 4px;
+  visibility: hidden;
+}
+.no-js .callouts,
+html.poster-mode .callouts {
+  display: none;
+}
+
+/* Scroll-lit text (Dandy-style): dim, a cyan-lit edge sweeps through, then white. */
+.reveal__c {
+  transition: color 0.35s var(--ease), text-shadow 0.35s var(--ease);
+}
+.reveal__c[data-s="dim"] {
+  color: rgba(242, 242, 239, 0.16);
+}
+.reveal__c[data-s="glow"] {
+  color: #a8f6ff;
+  text-shadow: 0 0 14px rgba(46, 230, 255, 0.85), 0 0 3px rgba(46, 230, 255, 0.9);
+}
+.reveal__c[data-s="lit"] {
+  color: var(--fg);
+}
+.no-js .reveal__c {
+  color: var(--fg);
+}
+.details-statement {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 4.4vw, 4rem);
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  max-width: 62rem;
+}
+
 /* ------------------------------------------------------------------ */
 /* Details after the film (layer 3)                                      */
 /* ------------------------------------------------------------------ */

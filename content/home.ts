@@ -14,6 +14,10 @@ import type { Milestone, Stat } from './types'
 export const home = {
   skipFilm: 'Skip the film',
 
+  /** Opens the details: one big statement that lights up as you scroll. */
+  statement:
+    'L.I.G.H.T clips onto your white cane and warns you about what the cane can’t reach: obstacles ahead, branches at head height, and anything coming at you fast. Through touch and sound, without asking you to give up the tool you already trust.',
+
   adds: {
     id: 'what-it-adds',
     title: 'What it adds to your cane',

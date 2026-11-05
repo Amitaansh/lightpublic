@@ -106,3 +106,23 @@ export const sceneStart: Record<SceneId, number> = (() => {
   }
   return out
 })()
+
+/**
+ * Labels on the blueprint of the exploded baton (the "Inside" scene). Visual
+ * only: the scene's screen-reader text already lists every part. `part` is the
+ * object name in three/baton (buildBaton / buildInternals). Concept layout.
+ */
+export const insideCallouts: { part: string; label: string }[] = [
+  { part: 'camera', label: 'Night-vision camera' },
+  { part: 'tof', label: 'Distance sensors' },
+  { part: 'ultrasonic', label: 'Ultrasonic sensors' },
+  { part: 'mics', label: 'Microphones' },
+  { part: 'ring', label: 'Light ring' },
+  { part: 'body.buttons', label: 'Braille buttons' },
+  { part: 'mainBoard', label: 'Main computer' },
+  { part: 'safetyCore', label: 'Safety core' },
+  { part: 'clip', label: 'Cane clip' },
+  { part: 'actuators', label: 'Haptic motor ring' },
+  { part: 'storage', label: 'Encrypted storage' },
+  { part: 'battery', label: 'Battery' },
+]

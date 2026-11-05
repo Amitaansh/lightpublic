@@ -6,29 +6,44 @@ const ease = (t: number) => {
   const x = clamp01(t)
   return x * x * (3 - 2 * x)
 }
-const bump = (u: number, a: number, b: number, c: number, d: number) => (u < b ? ease((u - a) / (b - a)) : 1 - ease((u - c) / (d - c)))
-const lerp = (a: number, b: number, t: number) => a + (b - a) * t
 
-export type Obstacle = { id: 'pole' | 'branch' | 'person'; pos: V3; vis: number; strength: number }
+export type Obstacle = {
+  id: 'pole' | 'branch' | 'person'
+  /** The point the sensors lock on to (world space). */
+  pos: V3
+  /** How present the obstacle is on screen, 0..1 (fades out once it has passed). */
+  vis: number
+  /** How strongly the grip answers it, 0..1: closer = stronger (PRD-F-001); 0 once behind. */
+  strength: number
+}
+
+/** Metres the walker covers per unit of scene progress in the vibration demo. */
+export const WALK = 5
 
 /**
- * Vibration demo, in world space. The user faces -X; their left is +Z, their
- * right is -Z. Each obstacle walks in from the dark, gets close, then fades,
- * and its strength rises as it nears (PRD-F-001: closer = stronger).
+ * Vibration demo, in world space. The user walks toward -X; their left is +Z,
+ * their right is -Z. Everything in the street slides past at walking speed
+ * (the person walks toward you, so a little faster). Each obstacle is felt
+ * once it is within sensing range ahead, more strongly the closer it gets,
+ * and fades out of view once it has passed.
  */
+const OBSTACLES: { id: Obstacle['id']; x0: number; speed: number; y: number; z: number }[] = [
+  { id: 'pole', x0: -3.2, speed: WALK, y: -0.28, z: 0.72 },
+  { id: 'branch', x0: -3.98, speed: WALK, y: 0.35, z: 0.02 },
+  { id: 'person', x0: -6.8, speed: WALK + 1.2, y: -0.2, z: -1.0 },
+]
+
 export function obstaclesAt(f: Frame): Obstacle[] {
   if (f.scene !== 'vibration') return []
-  const u = f.u
-  const item = (id: Obstacle['id'], a: number, b: number, c: number, d: number, far: V3, near: V3): Obstacle => {
-    const prog = ease((u - a) / (c - a))
-    const vis = bump(u, a, b, c, d) * f.obstacles.show
-    return { id, pos: [lerp(far[0], near[0], prog), lerp(far[1], near[1], prog), lerp(far[2], near[2], prog)], vis, strength: vis * (0.2 + 0.8 * prog) }
-  }
-  return [
-    item('pole', 0.16, 0.22, 0.48, 0.55, [-2.4, -0.28, 0.55], [-0.8, -0.28, 0.42]),
-    item('branch', 0.42, 0.48, 0.68, 0.74, [-2.2, 0.38, 0.02], [-0.58, 0.32, 0.02]),
-    item('person', 0.62, 0.68, 0.93, 0.99, [-2.2, -0.2, -1.4], [-1.05, -0.2, -0.62]),
-  ]
+  const show = f.obstacles.show
+  return OBSTACLES.map((o) => {
+    const x = o.x0 + f.u * o.speed
+    // Fade out as it passes the walker, before it reaches the camera.
+    const vis = show * (1 - ease((x + 0.15) / 0.35))
+    const ahead = -x
+    const strength = ahead > 0.05 ? show * ease((2.4 - ahead) / 1.9) * (1 - ease((0.25 - ahead) / 0.2)) : 0
+    return { id: o.id, pos: [x, o.y, o.z] as V3, vis, strength }
+  })
 }
 
 const v = new THREE.Vector3()

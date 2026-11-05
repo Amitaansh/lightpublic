@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { ButtonLink } from '@/components/ui/Button'
+import { Callouts } from './Callouts'
 import { FILM_LENGTH, scenes, sceneStart } from '@/content/film'
 import { home } from '@/content/home'
 import { site } from '@/content/site'
@@ -175,6 +176,7 @@ export function Film() {
         </div>
       </div>
 
+      <Callouts />
       <div ref={hint} className="scroll-hint" aria-hidden="true" />
       <div className="film-progress" aria-hidden="true">
         <span ref={fill} className="film-progress__fill" />

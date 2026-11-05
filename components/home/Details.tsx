@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { ButtonLink } from '@/components/ui/Button'
+import { ScrollReveal } from '@/components/ui/ScrollReveal'
 import { home } from '@/content/home'
 import type { Source } from '@/content/types'
 
@@ -29,11 +30,15 @@ export function Details() {
   const { adds, cane, safety, privacy, why, stage, faq, involved } = home
   return (
     <div id="details" className="details" tabIndex={-1}>
+      <div className="details-section">
+        <ScrollReveal className="details-statement">{home.statement}</ScrollReveal>
+      </div>
+
       <section className="details-section" aria-labelledby={`${adds.id}-title`}>
         <h2 id={`${adds.id}-title`} className="details-title">
           {adds.title}
         </h2>
-        <p className="t-lead measure">{adds.lead}</p>
+        <ScrollReveal className="t-lead measure">{adds.lead}</ScrollReveal>
         <ul className="details-grid details-grid--4">
           {adds.items.map((it) => (
             <li key={it.title} className="details-card">
@@ -91,7 +96,7 @@ export function Details() {
         <h2 id={`${why.id}-title`} className="details-title">
           {why.title}
         </h2>
-        <p className="t-lead measure">{why.lead}</p>
+        <ScrollReveal className="t-lead measure">{why.lead}</ScrollReveal>
         <ul className="details-grid details-grid--3">
           {why.stats.map((s) => (
             <li key={s.id} className="details-stat">
@@ -141,7 +146,7 @@ export function Details() {
         <h2 id={`${involved.id}-title`} className="details-title">
           {involved.title}
         </h2>
-        <p className="t-lead measure">{involved.lead}</p>
+        <ScrollReveal className="t-lead measure">{involved.lead}</ScrollReveal>
         <ul className="details-grid details-grid--2">
           {involved.paths.map((p) => (
             <li key={p.id} className="details-card details-card--path">
