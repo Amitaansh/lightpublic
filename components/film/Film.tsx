@@ -2,7 +2,10 @@
 
 import { useEffect, useRef } from 'react'
 import { ButtonLink } from '@/components/ui/Button'
+import { Callouts } from './Callouts'
 import { FILM_LENGTH, scenes, sceneStart } from '@/content/film'
+import { home } from '@/content/home'
+import { site } from '@/content/site'
 import { getLenis } from '@/lib/scroll'
 import { film, useLight } from '@/lib/store'
 import { live } from '@/three/film/live'
@@ -12,9 +15,10 @@ const clamp01 = (x: number) => Math.min(1, Math.max(0, x))
 
 /**
  * The home page: a scroll-driven film (founder decision 11-02). The page is a
- * tall track; scrolling moves the film. There is no visible copy apart from
- * the opening and closing titles; each scene's full description is in the
- * page for screen readers.
+ * tall track; scrolling moves the film. On screen: the opening and closing
+ * titles and one short caption per scene (layer 1). Each scene's full
+ * description is in the page for screen readers, and a skip link jumps
+ * straight to the details after the film.
  */
 export function Film() {
   const track = useRef<HTMLDivElement>(null)
@@ -22,6 +26,7 @@ export function Film() {
   const close = useRef<HTMLDivElement>(null)
   const fill = useRef<HTMLSpanElement>(null)
   const hint = useRef<HTMLDivElement>(null)
+  const caption = useRef<HTMLDivElement>(null)
   const tier = useLight((s) => s.tier)
   const sceneId = useLight((s) => s.sceneId)
 
@@ -67,6 +72,12 @@ export function Film() {
         ;(fill.current.parentElement as HTMLElement).style.transform = `translateY(${lift}px)`
       }
       if (hint.current) hint.current.style.opacity = String(1 - clamp01(T / 40))
+      if (caption.current) {
+        // Fade in once the scene has settled, out before it hands over.
+        const a = f.scene === 'title' || f.scene === 'finale' ? 0 : clamp01((f.u - 0.06) / 0.1) * (1 - clamp01((f.u - 0.86) / 0.1))
+        caption.current.style.opacity = String(a)
+        caption.current.style.transform = `translateY(${(1 - a) * 10 + lift}px)`
+      }
       if (f.scene !== lastScene) {
         lastScene = f.scene
         useLight.getState().set({ sceneId: f.scene })
@@ -76,6 +87,18 @@ export function Film() {
     raf = requestAnimationFrame(loop)
     return () => cancelAnimationFrame(raf)
   }, [])
+
+  // The skip link: jump past the film to the details and move focus there.
+  const skipFilm = (e: React.MouseEvent) => {
+    const target = document.getElementById('details')
+    if (!target) return
+    e.preventDefault()
+    const y = target.getBoundingClientRect().top + window.scrollY
+    const lenis = getLenis()
+    if (lenis) lenis.scrollTo(y, { immediate: true, force: true })
+    else window.scrollTo(0, y)
+    target.focus({ preventScroll: true })
+  }
 
   // Keyboard users reaching the closing buttons: bring the end of the film into view.
   const revealEnd = () => {
@@ -89,6 +112,9 @@ export function Film() {
 
   return (
     <div className="film">
+      <a className="skip-link skip-link--film" href="#details" onClick={skipFilm}>
+        {home.skipFilm}
+      </a>
       {tier === 'static' && (
         <div className="film__poster" aria-hidden="true">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -128,6 +154,12 @@ export function Film() {
           L<span className="wordmark__dot">.</span>I<span className="wordmark__dot">.</span>G<span className="wordmark__dot">.</span>H
           <span className="wordmark__dot">.</span>T
         </p>
+        <p className="title-card__line">{scenes[0].caption || site.oneLiner}</p>
+      </div>
+
+      <div ref={caption} className="film-caption" aria-hidden="true">
+        <p className="film-caption__label">{scenes.find((s) => s.id === sceneId)?.title}</p>
+        <p className="film-caption__text">{scenes.find((s) => s.id === sceneId)?.caption}</p>
       </div>
 
       <div ref={close} className="title-card title-card--close" data-inert="true" onFocusCapture={revealEnd}>
@@ -144,6 +176,7 @@ export function Film() {
         </div>
       </div>
 
+      <Callouts />
       <div ref={hint} className="scroll-hint" aria-hidden="true" />
       <div className="film-progress" aria-hidden="true">
         <span ref={fill} className="film-progress__fill" />

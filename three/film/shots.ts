@@ -21,7 +21,7 @@ export type Frame = {
   /** Depth-of-field focus point and strength (0..1). */
   focus: V3
   dof: number
-  baton: { pos: V3; tilt: number; pitch: number; spin: number; explode: number; tremble: number; fallback: number; buttons: number }
+  baton: { pos: V3; tilt: number; pitch: number; spin: number; explode: number; tremble: number; fallback: number; buttons: number; blueprint: number }
   hand: { show: number; approach: number; grip: number; reach: number }
   cane: { show: number; enter: number }
   /** Vibration demo: obstacles visible (their timing lives in world.ts). */
@@ -92,7 +92,7 @@ const base = (scene: SceneId, u: number): Frame => ({
   fov: 30,
   focus: ORIGIN,
   dof: 0.25,
-  baton: { pos: ORIGIN, tilt: 12, pitch: 0, spin: 0, explode: 0, tremble: 0, fallback: 0, buttons: 0 },
+  baton: { pos: ORIGIN, tilt: 12, pitch: 0, spin: 0, explode: 0, tremble: 0, fallback: 0, buttons: 0, blueprint: 0 },
   hand: { show: 0, approach: 1, grip: 0, reach: 0 },
   cane: { show: 0, enter: 0 },
   obstacles: { show: 0 },
@@ -324,15 +324,17 @@ const SHOTS: Record<SceneId, (u: number) => Frame> = {
     f.baton.pos = [0, 0.012, 0]
     f.hand = { show: 1, approach: 0, grip: 1, reach: 0 }
     f.cane = { show: 1, enter: 1 }
+    // Up and behind the walker, so the sensed street fills the frame around the grip.
     f.cam = kv(u, [
       [0, [0.28, 0.12, 1.35]],
-      [0.14, [0.5, 0.27, 0.16]],
-      [0.9, [0.46, 0.25, 0.12]],
-      [1, [0.62, 0.4, 0.3]],
+      [0.14, [1.25, 0.42, -0.2]],
+      [0.9, [1.15, 0.4, -0.2]],
+      [1, [0.64, 0.4, 0.3]],
     ])
     f.target = kv(u, [
       [0, [-0.28, -0.18, 0]],
-      [0.14, [-0.85, -0.12, 0]],
+      [0.14, [-1.6, 0.0, 0.0]],
+      [0.9, [-1.6, -0.02, 0.0]],
       [1, [-1.1, -0.3, 0]],
     ])
     f.fov = k(u, [
@@ -474,6 +476,14 @@ const SHOTS: Record<SceneId, (u: number) => Frame> = {
       [0.34, 1],
       [0.84, 1],
       [0.95, 0],
+    ])
+    // Blueprint: once it's apart, the parts turn into a labelled x-ray drawing,
+    // then back to solid for the fallback ladder.
+    f.baton.blueprint = k(u, [
+      [0.27, 0],
+      [0.36, 1],
+      [0.63, 1],
+      [0.69, 0],
     ])
     f.baton.fallback = k(u, [
       [0.68, 0],

@@ -42,6 +42,13 @@ for (const f of files) {
 }
 
 const read = (p) => readFileSync(path.join(root, p), 'utf8')
+const homeCopy = read('content/home.ts')
+const unconfirmed = (homeCopy.match(/confirmed: false/g) ?? []).length
+if (unconfirmed) warnings.push(`content/home.ts: ${unconfirmed} milestone(s) not yet confirmed by the founders`)
+const noLink = (homeCopy.match(/url: ''/g) ?? []).length
+if (noLink) warnings.push(`content/home.ts: ${noLink} source(s) without a link`)
+const unchecked = (homeCopy.match(/checked: null/g) ?? []).length
+if (unchecked) warnings.push(`content/home.ts: ${unchecked} figure(s) not yet re-checked against their source`)
 if (/draft: true/.test(read('content/about.ts'))) warnings.push('content/about.ts: "Why we started" is still a draft; replace it with the founders’ own words')
 
 for (const w of warnings) console.warn('warn ', w)

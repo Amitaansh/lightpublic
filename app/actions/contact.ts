@@ -27,6 +27,8 @@ export async function sendContact(_prev: ContactState, formData: FormData): Prom
   const message = String(formData.get('message') ?? '').trim()
   const honeypot = String(formData.get('company') ?? '')
   const openedAt = Number(formData.get('openedAt') ?? 0)
+  const roleValue = String(formData.get('role') ?? '')
+  const role = contact.roles.find((r) => r.value === roleValue)
 
   const parsed = schema.safeParse({ email, message })
   if (!parsed.success) {
@@ -58,8 +60,8 @@ export async function sendContact(_prev: ContactState, formData: FormData): Prom
       from,
       to,
       replyTo: email,
-      subject: `L.I.G.H.T site: message from ${email}`,
-      text: `${message || '(No message, just an email address.)'}\n\nSent from the contact form on the L.I.G.H.T site. Reply to ${email}.`,
+      subject: `L.I.G.H.T site: ${role ? `${role.group === 'tester' ? 'tester sign-up' : role.group}, ` : ''}message from ${email}`,
+      text: `${role ? `From: ${role.label}\n\n` : ''}${message || '(No message, just an email address.)'}\n\nSent from the contact form on the L.I.G.H.T site. Reply to ${email}.`,
     })
     if (error) {
       console.error('[contact] send failed:', error.name)

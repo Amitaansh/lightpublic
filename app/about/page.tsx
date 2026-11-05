@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { ButtonLink } from '@/components/ui/Button'
 import { LineReveal } from '@/components/ui/LineReveal'
+import { ScrollReveal } from '@/components/ui/ScrollReveal'
 import { about } from '@/content/about'
 
 export const metadata: Metadata = {
@@ -23,9 +24,9 @@ export default function AboutPage() {
             {about.whyWeStarted.title}
           </h2>
           {about.whyWeStarted.paragraphs.map((p) => (
-            <p key={p} className="t-lead measure" style={{ marginTop: '1.5rem' }}>
-              {p}
-            </p>
+            <div key={p} style={{ marginTop: '1.5rem' }}>
+              <ScrollReveal className="t-lead measure">{p}</ScrollReveal>
+            </div>
           ))}
           <p className="t-body t-secondary measure" style={{ marginTop: '1.5rem' }}>
             {about.stage} {about.name}

@@ -3,26 +3,25 @@
 import { useFrame } from '@react-three/fiber'
 import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
-import { live } from '../film/live'
+import { ALERT_RED, CYAN, live } from '../film/live'
 
-const CYAN = new THREE.Color('#2ee6ff')
 
 /**
- * STOP: a fast streak of light crosses ahead from the right; one shockwave
+ * STOP: a fast red streak crosses ahead from the right; one red shockwave
  * ring spreads from the grip. One swell, not a flash.
  */
 export function StopFx() {
   const streak = useRef<THREE.Group>(null)
   const shock = useRef<THREE.Mesh>(null)
   const parts = useMemo(() => {
-    const coreMat = new THREE.MeshBasicMaterial({ color: CYAN, transparent: true, opacity: 0, toneMapped: false })
-    const trailMat = new THREE.MeshBasicMaterial({ color: CYAN, transparent: true, opacity: 0, toneMapped: false, blending: THREE.AdditiveBlending, depthWrite: false })
+    const coreMat = new THREE.MeshBasicMaterial({ color: ALERT_RED, transparent: true, opacity: 0, toneMapped: false })
+    const trailMat = new THREE.MeshBasicMaterial({ color: ALERT_RED, transparent: true, opacity: 0, toneMapped: false, blending: THREE.AdditiveBlending, depthWrite: false })
     const core = new THREE.Mesh(new THREE.CapsuleGeometry(0.03, 0.12, 6, 16), coreMat)
     core.rotation.x = Math.PI / 2
     const trail = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.03, 0.9, 16, 1, true), trailMat)
     trail.rotation.x = Math.PI / 2
     trail.position.z = -0.5
-    const shockMat = new THREE.MeshBasicMaterial({ color: CYAN, transparent: true, opacity: 0, toneMapped: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false })
+    const shockMat = new THREE.MeshBasicMaterial({ color: ALERT_RED, transparent: true, opacity: 0, toneMapped: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false })
     const shockGeo = new THREE.RingGeometry(0.96, 1, 96)
     return { core, trail, coreMat, trailMat, shockMat, shockGeo }
   }, [])

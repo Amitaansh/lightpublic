@@ -52,7 +52,7 @@ export default function SceneCanvas() {
         <Stage tier={tier} />
         <Director />
         <HapticHalo />
-        <Obstacles />
+        <Obstacles tier={tier} />
         <Route />
         <StopFx />
         <Dust tier={tier} />

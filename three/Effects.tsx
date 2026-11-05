@@ -25,7 +25,8 @@ export function Effects({ tier }: { tier: Tier }) {
     focus.set(f.focus[0], f.focus[1], f.focus[2])
     if (d.target) d.target.lerp(focus, 0.25)
     else d.target = focus.clone()
-    d.bokehScale = 0.6 + f.dof * 4.2
+    // A blueprint is a technical drawing: everything in focus while it's showing.
+    d.bokehScale = (0.6 + f.dof * 4.2) * (1 - f.baton.blueprint)
   })
 
   if (tier === 'full') {

@@ -25,10 +25,13 @@ export type HandPose = {
   reach: number
   /** How far the cane's grip is nested under the baton, 0..1 (fingers wrap it too). */
   cane?: number
+  /** Maps contact space (baton space) to the hand's rest space; identity when omitted. */
+  toHand?: THREE.Matrix4
 }
 
 /**
- * What the fingers close around, in the hand's rest (armature) space. Each
+ * What the fingers close around, in contact space (the baton's own space;
+ * `HandPose.toHand` carries it into the hand's rest space each frame). Each
  * joint is kept at least `radius(along) + joint thickness` from every line,
  * so the fingers stop on the surface instead of passing through it.
  */
@@ -122,11 +125,23 @@ export function createHandRig(scene: THREE.Object3D, contact?: GripContact): Han
   }
 
   const tmp = new THREE.Vector3()
+  // The contact lines in hand rest space, refreshed at the start of every setPose.
+  const lines = (contact?.lines ?? []).map((l) => ({ src: l, origin: l.origin.clone(), dir: l.dir.clone(), radius: l.radius }))
+  const placeLines = (m?: THREE.Matrix4) => {
+    for (const l of lines) {
+      l.origin.copy(l.src.origin)
+      l.dir.copy(l.src.dir)
+      if (m) {
+        l.origin.applyMatrix4(m)
+        l.dir.transformDirection(m)
+      }
+    }
+  }
   /** How far the point sits inside any contact surface (m); <= 0 means clear. */
   const depth = (p: THREE.Vector3, thick: number, pose: HandPose) => {
     if (!contact) return -1
     let worst = -Infinity
-    for (const l of contact.lines) {
+    for (const l of lines) {
       tmp.copy(p).sub(l.origin)
       const s = tmp.dot(l.dir)
       const r = l.radius(s, pose)
@@ -158,7 +173,7 @@ export function createHandRig(scene: THREE.Object3D, contact?: GripContact): Han
    * stops where the finger meets the surface (bisection), and the next joint
    * carries on curling around it.
    */
-  const solve = (chain: Rest[], pivots: number[], rotations: Rot[][], thick: number[], pose: HandPose, allowed: number) => {
+  const plan = (chain: Rest[], pivots: number[], rotations: Rot[][], thick: number[], pose: HandPose, allowed: number) => {
     const scales = pivots.map(() => 1)
     if (contact) {
       // Rotations that already start inside the surface (the rest pose) are left alone.
@@ -183,18 +198,30 @@ export function createHandRig(scene: THREE.Object3D, contact?: GripContact): Han
         } else scales[i] = 1
       }
     }
-    const { ps, qs } = fk(chain, pivots, rotations, scales)
+    const r = fk(chain, pivots, rotations, scales)
+    return { ...r, depth: contact ? chainDepth(r.ps, 0, thick, pose) : -1 }
+  }
+
+  const apply = (chain: Rest[], { ps, qs }: { ps: THREE.Vector3[]; qs: THREE.Quaternion[] }) => {
     chain.forEach((j, k) => {
       j.bone.position.copy(ps[k])
       j.bone.quaternion.copy(qs[k]).multiply(j.q)
     })
   }
 
+  const solve = (chain: Rest[], pivots: number[], rotations: Rot[][], thick: number[], pose: HandPose, allowed: number) =>
+    apply(chain, plan(chain, pivots, rotations, thick, pose, allowed))
+
+  // Extra thumb swing (degrees about the palm normal) tried when the thumb would
+  // pass through the grip: nearest first, alternating sides.
+  const THUMB_SWING = [0, ...Array.from({ length: 14 }, (_, i) => ((i >> 1) + 1) * 5 * (i % 2 ? 1 : -1))]
+
   // Per finger: a little more curl toward the pinky, as in a real grip.
   const fingerBias = [0, 4, 8, 12]
 
   const setPose = (pose: HandPose) => {
     const { grip, reach } = pose
+    placeLines(pose.toHand)
     // The skin may press a little into the soft-touch grip, never further.
     const allowed = 0.0012
     const g = THREE.MathUtils.clamp(grip, 0, 1)
@@ -212,16 +239,28 @@ export function createHandRig(scene: THREE.Object3D, contact?: GripContact): Han
         [{ axis: ax, angle: (5 + 46 * g) * DEG }],
       ], FINGER_THICK, pose, allowed)
     })
-    // Thumb: swings across the palm and lies along the top of the grip.
-    solve(thumbChain, [0, 1, 2], [
+    // Thumb: swings across the palm and lies along the top of the grip. If that
+    // path runs through the baton, the thumb swings a little further out (or in)
+    // until it clears, so it rests on the surface instead of inside it.
+    const thumbRot = (swing: number): Rot[][] => [
       [
         // Lift the thumb from along the fingers to along the top of the grip.
-        { axis: PALM_N, angle: (-6 - 50 * g) * DEG },
+        { axis: PALM_N, angle: (-6 - 50 * g + swing) * DEG },
         { axis: thumbFlex, angle: (4 + 10 * g) * DEG },
       ],
       [{ axis: thumbFlex, angle: (6 + 12 * g) * DEG }],
       [{ axis: thumbFlex, angle: (6 + 22 * g) * DEG }],
-    ], THUMB_THICK, pose, allowed)
+    ]
+    let best: ReturnType<typeof plan> | null = null
+    for (const swing of contact ? THUMB_SWING : [0]) {
+      const r = plan(thumbChain, [0, 1, 2], thumbRot(swing), THUMB_THICK, pose, allowed)
+      if (!best || r.depth < best.depth) best = r
+      if (r.depth <= allowed) {
+        best = r
+        break
+      }
+    }
+    apply(thumbChain, best!)
     skinned.skeleton.update()
   }
 

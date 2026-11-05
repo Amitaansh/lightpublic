@@ -4,13 +4,15 @@ import { useGLTF } from '@react-three/drei'
 import { useFrame, useThree } from '@react-three/fiber'
 import { Suspense, useCallback, useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
+import { insideCallouts } from '@/content/film'
 import { film, useLight } from '@/lib/store'
 import { FALLBACK_POWERED } from '../baton/buildInternals'
+import { attachBlueprint } from '../baton/blueprint'
 import { buildBaton, type BatonHandles } from '../baton/buildBaton'
 import { CANE_R, CANE_Z, GRIP_WAIST, R, Y } from '../baton/dimensions'
 import { buildCane } from '../cane/buildCane'
 import { createHandRig, type GripContact, type HandRig } from '../hand/handRig'
-import { live, pointer } from './live'
+import { ALERT_RED, CYAN, live, pointer } from './live'
 import { frameAt } from './shots'
 import { motorStrengths, obstaclesAt } from './world'
 
@@ -32,6 +34,12 @@ const HAND = {
   gripCenter: new THREE.Vector3(0, 0.053, 0),
   /** Where the hand comes in from, in baton space (scaled by `approach`). */
   approach: new THREE.Vector3(-0.15, 0.03, 0.11),
+}
+
+/** True when page content, not the 3D scene, is under this point on screen. */
+function coveredAt(x: number, y: number) {
+  const el = document.elementFromPoint(x, y)
+  return !!el?.closest('.details, .site-footer, .page, .site-header, dialog, [role="dialog"]')
 }
 
 function ringBump(ring: { kind: string; at: number } | null, now: number) {
@@ -72,21 +80,21 @@ function caneRadius(y: number) {
 }
 
 /**
- * What the hand closes around, in its own rest space: the baton grip and,
- * once it is nested underneath, the cane's grip. Baton Y is hand +Z, baton Z
- * is hand +Y (see HAND.basis), and HAND.anchor sits on the grip centre line.
+ * What the hand closes around, in baton space: the baton grip and, once it is
+ * nested underneath, the cane's grip. The Director passes the baton-to-hand
+ * transform every frame, so the surfaces stay right while the hand approaches.
  */
 const GRIP_CONTACT: GripContact = {
   lines: [
     {
-      origin: HAND.anchor.clone(),
-      dir: new THREE.Vector3(0, 0, 1),
-      radius: (s) => batonRadius(0.053 + s),
+      origin: new THREE.Vector3(0, 0, 0),
+      dir: new THREE.Vector3(0, 1, 0),
+      radius: (s) => batonRadius(s),
     },
     {
-      origin: HAND.anchor.clone().add(new THREE.Vector3(0, CANE_Z, 0)),
-      dir: new THREE.Vector3(0, 0, 1),
-      radius: (s, pose) => caneRadius(0.053 + s) * smooth(clamp01(((pose.cane ?? 0) - 0.85) / 0.15)),
+      origin: new THREE.Vector3(0, 0, CANE_Z),
+      dir: new THREE.Vector3(0, 1, 0),
+      radius: (s, pose) => caneRadius(s) * smooth(clamp01(((pose.cane ?? 0) - 0.85) / 0.15)),
     },
   ],
 }
@@ -104,6 +112,22 @@ function HandModel({ onReady }: { onReady: (rig: HandRig) => void }) {
 export function Director() {
   const baton = useMemo<BatonHandles>(buildBaton, [])
   const cane = useMemo(buildCane, [])
+  const blueprint = useMemo(() => attachBlueprint(baton.root), [baton])
+  // Each label's anchor: the centre of its part, found by name, in the part's own space.
+  const anchors = useMemo(
+    () =>
+      insideCallouts.map((c) => {
+        const object = baton.root.getObjectByName(c.part) ?? null
+        let local: THREE.Vector3 | null = null
+        if (object) {
+          baton.root.updateWorldMatrix(true, true)
+          const box = new THREE.Box3().setFromObject(object)
+          local = object.worldToLocal(box.getCenter(new THREE.Vector3()))
+        }
+        return { object, local }
+      }),
+    [baton],
+  )
   const outer = useRef<THREE.Group>(null)
   const pitchG = useRef<THREE.Group>(null)
   const spinG = useRef<THREE.Group>(null)
@@ -112,14 +136,15 @@ export function Director() {
   const { camera, size } = useThree()
   const persp = camera as THREE.PerspectiveCamera
   const raycaster = useMemo(() => new THREE.Raycaster(), [])
-  const state = useRef({ prevEnter: 0, prevLevel: 0, prevShock: 0, lights: 0, hoverCheck: 0, powered: new Map<THREE.Material, number>() })
+  const state = useRef({ prevEnter: 0, prevLevel: 0, prevShock: 0, lights: 0, hoverCheck: 0, powered: new Map<THREE.Material, number>(), toHand: new THREE.Matrix4(), ringColor: new THREE.Color(), tmpV: new THREE.Vector3() })
 
   useEffect(
     () => () => {
       baton.dispose()
       cane.dispose()
+      blueprint.dispose()
     },
-    [baton, cane],
+    [baton, cane, blueprint],
   )
   const onHandReady = useCallback((r: HandRig) => {
     hand.current = r
@@ -135,6 +160,8 @@ export function Director() {
   // Click (or tap) the baton to switch the room lights; hover shows a pointer.
   useEffect(() => {
     const ndc = (e: PointerEvent | MouseEvent) => {
+      pointer.cx = e.clientX
+      pointer.cy = e.clientY
       pointer.x = (e.clientX / window.innerWidth) * 2 - 1
       pointer.y = -(e.clientY / window.innerHeight) * 2 + 1
     }
@@ -149,6 +176,8 @@ export function Director() {
     const onClick = (e: MouseEvent) => {
       const t = e.target as Element | null
       if (t?.closest('a,button,input,textarea,select,label,dialog,[role="dialog"]')) return
+      // Page content (the details, footer, text pages) sits over the canvas: not the baton.
+      if (coveredAt(e.clientX, e.clientY)) return
       ndc(e)
       if (hit()) useLight.getState().toggleLights()
     }
@@ -188,7 +217,12 @@ export function Director() {
 
     // ---- 2. Camera --------------------------------------------------------
     camera.position.set(f.cam[0], f.cam[1], f.cam[2])
-    camera.lookAt(f.target[0], f.target[1], f.target[2])
+    // On tall, narrow screens the over-the-shoulder shots look far ahead and push the
+    // hand off the right edge: aim partway back toward the baton so the grip stays in frame.
+    const narrow = clamp01((0.8 - size.width / size.height) / 0.3)
+    const pull = narrow * (f.scene === 'stop' ? 0.85 : f.scene === 'vibration' || f.scene === 'route' ? 0.5 : 0)
+    const g = live.gripWorld
+    camera.lookAt(f.target[0] + (g.x - f.target[0]) * pull, f.target[1] + (g.y - f.target[1]) * pull, f.target[2] + (g.z - f.target[2]) * pull)
     const fov = size.width < 700 ? f.fov * 1.3 : f.fov
     if (Math.abs(persp.fov - fov) > 0.01) {
       persp.fov = fov
@@ -220,6 +254,7 @@ export function Director() {
       p.object.position.copy(p.offset).multiplyScalar(ei)
     }
     for (const p of baton.internals) p.object.visible = e > 0.01
+    blueprint.set(f.baton.blueprint)
 
     // ---- 5. Fallback ladder: systems power down; the safety core stays lit -----
     const level = Math.round(f.baton.fallback)
@@ -240,6 +275,13 @@ export function Director() {
     const L = S.lights
 
     // ---- 7. Light ring, buttons -----------------------------------------------------
+    // STOP turns the alert red: the ring, the motors and the haptic halo, from the
+    // moment the threat appears until the scene hands over to the exploded view.
+    live.alert = f.scene === 'stop' ? smooth(clamp01((f.u - 0.2) / 0.12)) * (1 - smooth(clamp01((f.u - 0.88) / 0.12))) : 0
+    S.ringColor.copy(CYAN).lerp(ALERT_RED, live.alert)
+    baton.materials.ring.color.copy(S.ringColor)
+    baton.materials.ring.emissive.copy(S.ringColor)
+    baton.ringLight.color.copy(S.ringColor)
     const bumpRing = ringBump(s.ring, now)
     const breathe = floating ? 0.25 * Math.sin(t * 1.6) : 0
     const ringI = 2.2 + breathe + f.ringBoost * 2.5 + bumpRing + L * 4 + live.stopAll * 4
@@ -276,8 +318,12 @@ export function Director() {
       ha.rotateZ(a * 0.35)
       ha.visible = f.hand.show > 0.01
     }
-    if (hand.current) {
-      hand.current.setPose({ grip: f.hand.grip, reach: f.hand.reach, cane: f.cane.show > 0.01 ? f.cane.enter : 0 })
+    if (hand.current && ha) {
+      // Baton and hand anchor share a parent and the baton root sits at its origin,
+      // so baton space → hand rest space is the inverse of the anchor's local matrix.
+      ha.updateMatrix()
+      S.toHand.copy(ha.matrix).invert()
+      hand.current.setPose({ grip: f.hand.grip, reach: f.hand.reach, cane: f.cane.show > 0.01 ? f.cane.enter : 0, toHand: S.toHand })
       hand.current.setOpacity(f.hand.show)
     }
 
@@ -295,14 +341,32 @@ export function Director() {
     S.prevShock = f.shock
     baton.actuators.forEach((act, k) => {
       act.glow.emissiveIntensity = (Math.max(live.motors[k], live.stopAll) * 6) as number
+      act.glow.emissive.copy(S.ringColor)
     })
+
+    // ---- Blueprint labels: project each part's centre to the screen ----------------
+    live.calloutShow = smooth(clamp01((f.baton.blueprint - 0.6) / 0.4))
+    if (live.calloutShow > 0.001) {
+      o.updateWorldMatrix(true, true)
+      anchors.forEach((a, i) => {
+        const out = live.callouts[i] ?? (live.callouts[i] = { x: 0, y: 0, on: false })
+        if (!a.object || !a.local) return void (out.on = false)
+        S.tmpV.copy(a.local)
+        a.object.localToWorld(S.tmpV)
+        S.tmpV.project(camera)
+        out.x = (S.tmpV.x * 0.5 + 0.5) * size.width
+        out.y = (-S.tmpV.y * 0.5 + 0.5) * size.height
+        out.on = S.tmpV.z < 1 && out.x > 8 && out.x < size.width - 8 && out.y > 8 && out.y < size.height - 8
+      })
+    }
 
     // ---- 11. Hover: show a pointer over the baton -----------------------------------------
     S.hoverCheck += dt
     if (pointer.active && S.hoverCheck > 0.1) {
       S.hoverCheck = 0
       raycaster.setFromCamera(new THREE.Vector2(pointer.x, pointer.y), camera)
-      const over = raycaster.intersectObjects(baton.hitTargets, true).length > 0
+      // Only when nothing on the page covers the canvas there (re-checked as the page scrolls).
+      const over = !coveredAt(pointer.cx, pointer.cy) && raycaster.intersectObjects(baton.hitTargets, true).length > 0
       document.body.dataset.overBaton = over ? 'true' : 'false'
     }
   })

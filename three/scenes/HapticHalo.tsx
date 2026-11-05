@@ -3,9 +3,8 @@
 import { useFrame } from '@react-three/fiber'
 import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
-import { live } from '../film/live'
+import { ALERT_RED, CYAN, live } from '../film/live'
 
-const CYAN = new THREE.Color('#2ee6ff')
 const SEG = 8
 const R_IN = 0.056
 const R_OUT = 0.061
@@ -17,6 +16,8 @@ const RIPPLES = 2
  * brightens with that motor and sends ripples outward. Slow swells, never
  * flashes (WCAG 2.3.1).
  */
+const tint = new THREE.Color()
+
 export function HapticHalo() {
   const group = useRef<THREE.Group>(null)
   const { segments, ripples, geos, mats } = useMemo(() => {
@@ -68,6 +69,8 @@ export function HapticHalo() {
     if (!g.visible) return
     g.position.copy(live.gripWorld)
     g.quaternion.copy(live.batonQuat)
+    tint.copy(CYAN).lerp(ALERT_RED, live.alert)
+    for (const m of mats) (m as THREE.MeshBasicMaterial).color.copy(tint)
     const show = f.scene === 'vibration' ? Math.min(1, f.u / 0.14) : f.scene === 'route' ? 1 - Math.max(0, (f.u - 0.9) / 0.1) : 1
     segments.forEach((s, k) => {
       const v = Math.max(live.motors[k], live.stopAll)
